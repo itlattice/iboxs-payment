@@ -1,31 +1,15 @@
 <?php
-header('Content-type:text/html; Charset=utf-8');
-//支付宝公钥，账户中心->密钥管理->开放平台密钥，找到添加了支付功能的应用，根据你的加密类型，查看支付宝公钥
-$alipayPublicKey='';
-
-$aliPay = new AlipayService($alipayPublicKey);
-//验证签名
-$result = $aliPay->rsaCheck($_GET,$_GET['sign_type']);
-if($result===true){
-    //同步回调一般不处理业务逻辑，显示一个付款成功的页面，或者跳转到用户的财务记录页面即可。
-    echo '<h1>付款成功</h1>';
-}
-echo '不合法的请求';exit();
-class AlipayService
-{
-    //支付宝公钥
-    protected $alipayPublicKey;
-    protected $charset;
-
-    public function __construct($alipayPublicKey)
+namespace iboxs\payment\alipay;
+class AlipayNotify{
+        protected $alipayPublicKey;
+        protected $charset;
+    public function __construct($config)
     {
+        $this->alipayPublicKey=$this->config['publicKey'];
         $this->charset = 'utf8';
-        $this->alipayPublicKey=$alipayPublicKey;
+        // $aliPay->setRsaPrivateKey();
     }
 
-    /**
-     *  验证签名
-     **/
     public function rsaCheck($params) {
         $sign = $params['sign'];
         $signType = $params['sign_type'];
@@ -54,22 +38,6 @@ class AlipayService
         return $result;
     }
 
-    /**
-     * 校验$value是否非空
-     *  if not set ,return true;
-     *    if is null , return true;
-     **/
-    protected function checkEmpty($value) {
-        if (!isset($value))
-            return true;
-        if ($value === null)
-            return true;
-        if (trim($value) === "")
-            return true;
-
-        return false;
-    }
-
     public function getSignContent($params) {
         ksort($params);
         $stringToBeSigned = "";
@@ -88,6 +56,21 @@ class AlipayService
         }
         unset ($k, $v);
         return $stringToBeSigned;
+    }
+
+    /**
+     * 校验$value是否非空
+     *  if not set ,return true;
+     *    if is null , return true;
+     **/
+    protected function checkEmpty($value) {
+        if (!isset($value))
+            return true;
+        if ($value === null)
+            return true;
+        if (trim($value) === "")
+            return true;
+        return false;
     }
 
     /**
