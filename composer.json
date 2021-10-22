@@ -2,10 +2,11 @@
     "name": "iboxs/payment",
     "description": "composer",
     "type": "1",
+    "version": "1.0.0",
     "authors": [
         {
-            "name": "hyy",
-            "email": "437513398@qq.com"
+            "name": "zqu",
+            "email": "zqu1016@qq.com"
         }
     ],
     "minimum-stability": "dev",

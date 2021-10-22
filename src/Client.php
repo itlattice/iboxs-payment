@@ -1,7 +1,8 @@
 <?php
 /**
  * 支付从这里开始
- * @author  zqu
+ * @author  zqu zqu1016@qq.com
+ * 
  */
 namespace iboxs\payment;
 
@@ -27,6 +28,8 @@ class Client
 
     /**
      * 支付宝网页支付（会自动分手机端及pc端支付）
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * 本函数调用后会自动跳转至支付宝内支付，无需做任何处理
      */
     public function AlipayWeb($orderInfo){
         $aliPay = new AlipayService();
@@ -49,6 +52,8 @@ class Client
 
     /**
      * 支付宝扫码支付获取二维码
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return mixed 支付宝返回的信息，可在其中提取到二维码信息后生成二维码
      */
     public function AlipayCode($orderInfo){
         $aliPay = new AlipayService();
@@ -65,6 +70,8 @@ class Client
 
     /**
      * 支付宝支付退款
+     * @param array $orderInfo 退款信息（具体构建方式参考文档readme.md）
+     * @return mixed 成功返回true，失败返回支付宝返回的数据
      */
     public function AlipayRefund($orderInfo){
         $aliPay = new AlipayService();
@@ -84,11 +91,10 @@ class Client
 
     /**
      * 微信支付获取二维码（一般用于pc端支付），获取的为二维码信息，需将二维码信息转换为二维码图片
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return mixed 微信返回的信息，可在其中提取到二维码信息
      */
     public function WxPayCode($orderInfo){
-        // $mchid = 'xxxx';          //微信支付商户号 PartnerID 通过微信支付商户资料审核后邮件发送
-        // $appid = 'xxxx';  //公众号APPID 通过微信支付商户资料审核后邮件发送
-        // $apiKey = 'xxxx';   //https://pay.weixin.qq.com 帐户设置-安全设置-API安全-API密钥-设置API密钥
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
         $outTradeNo = $orderInfo['out_trade_no'];     //你自己的商品订单号
         $payAmount = $orderInfo['amount'];          //付款金额，单位:元
@@ -97,14 +103,12 @@ class Client
         $payTime = time();      //付款时间
         $arr = $wxPay->NativePay($payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
         return $arr;
-        // //生成二维码
-        // $url = 'http://qr.liantu.com/api.php?text='.$arr['code_url'];
-        // echo "<img src='{$url}' style='width:300px;'><br>";
-        // echo '二维码内容：'.$arr['code_url'];
     }
 
     /**
      * 微信手机网页端支付（微信内网页可以直接使用微信提供的js调起支付）
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return mixed 会自动跳转至微信内完成支付
      */
     public function WxPayWap($orderInfo){
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
@@ -120,6 +124,8 @@ class Client
     }
     /**
      * 微信公众号支付
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return mixed 返回微信返回的信息
      */
     public function WxJsPay($orderInfo){
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
@@ -136,6 +142,8 @@ class Client
 
     /**
      * 微信APP支付(获取支付码)
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return mixed 返回微信返回的信息
      */
     public function WxJsapiParams($orderInfo,$is_micro_app=false){
         $app=new App();
@@ -155,6 +163,8 @@ class Client
 
     /**
      * 微信支付退款
+     * @param array $orderInfo 退款信息（具体构建方式参考文档readme.md）
+     * @return mixed 返回微信返回的信息
      */
     public function WxRefund($orderInfo){
         $orderNo = $orderInfo['out_trade_no'];                   //商户订单号（商户订单号与微信订单号二选一，至少填一个）
@@ -170,6 +180,8 @@ class Client
 
     /**
      * 微信支付到零钱
+     * @param array $orderInfo 转账信息（具体构建方式参考文档readme.md）
+     * @return mixed 返回微信返回的信息
      */
     public function WxTransfers($orderInfo){
         //①、获取当前访问页面的用户openid（如果给指定用户转账，则直接填写指定用户的openid)
