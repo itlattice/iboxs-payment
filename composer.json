@@ -1,9 +1,9 @@
 {
     "name": "iboxs/payment",
-    "description": "composer",
+    "description": "支付宝/微信支付集成包",
     "type": "1",
     "license": "MIT",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "authors": [
         {
             "name": "zqu",
