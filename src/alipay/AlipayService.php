@@ -123,17 +123,14 @@ class AlipayService
     public function codePay(){
         $requestConfigs = array(
             'out_trade_no'=>$this->outTradeNo,
-            'scene'=>'bar_code',                //条码支付固定传入bar_code
-            'auth_code'=>$this->authCode,         //用户付款码，25~30开头的长度为16~24位的数字，实际字符串长度以开发者获取的付款码长度为准
-            'total_amount'=>$this->totalFee,      //单位 元
-            'subject'=>$this->orderName,          //订单标题
-            'store_id'=>'DEDEMAO_001',          //商户门店编号
-            'timeout_express'=>'2m',            //交易超时时间
+            'total_amount'=>$this->totalFee, //单位 元
+            'subject'=>$this->orderName,  //订单标题
+            'timeout_express'=>'30m'       //该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
         );
         $commonConfigs = array(
             //公共参数
             'app_id' => $this->appId,
-            'method' => 'alipay.trade.pay',             //接口名称
+            'method' => 'alipay.trade.precreate',             //接口名称
             'format' => 'JSON',
             'charset'=>$this->charset,
             'sign_type'=>'RSA2',
@@ -144,8 +141,7 @@ class AlipayService
         );
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
         $result = $this->curlPost($this->GatewayUrl,$commonConfigs);
-        $result = iconv('GBK','UTF-8',$result);
-        return json_decode($result,true);
+        return $result;
     }
 
     /**

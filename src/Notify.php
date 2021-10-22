@@ -10,7 +10,7 @@ use iboxs\payment\wxpay\WxpayNotify;
 
 class Notify
 {
-    public function alipayNotify($config)
+    public static function alipayNotify($config)
     {
         $params=$_POST;
         $notify=new AlipayNotify($config);
@@ -18,7 +18,7 @@ class Notify
         return $result;
     }
 
-    public function WxPayNotify($config){
+    public static function WxPayNotify($config){
         $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['key']);
         $result=$notify->Check();
         return $result;

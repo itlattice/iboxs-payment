@@ -1,8 +1,8 @@
 <?php
 namespace iboxs\payment\alipay;
 class AlipayNotify{
-        protected $alipayPublicKey;
-        protected $charset;
+    protected $alipayPublicKey;
+    protected $charset;
     public function __construct($config)
     {
         $this->alipayPublicKey=$this->config['publicKey'];

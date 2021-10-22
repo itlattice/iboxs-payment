@@ -19,6 +19,9 @@ class Client
      * 如果需要支付宝支付就传入支付宝支付的配置信息，需要微信支付就传入微信支付配置信息，均为数组字典，具体格式参考文档及示例程序
      */
     public function __construct($config){
+        if(!isset($config['gatewayUrl'])){
+            $config['gatewayUrl']="https://openapi.alipay.com/gateway.do";
+        }
         $this->config=$config;
     }
 
@@ -57,7 +60,6 @@ class Client
         $aliPay->setOrderName($orderInfo['order_name']);
         $aliPay->setGatewayUrl($this->config['gatewayUrl']);
         $result = $aliPay->codePay();
-        $result = $result['alipay_trade_pay_response'];
         return $result;
     }
 
