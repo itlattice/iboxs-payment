@@ -140,7 +140,7 @@ class Client
     public function WxJsapiParams($orderInfo,$is_micro_app=false){
         $app=new App();
         $params=array(
-            'body'=>$orderInfo['body'],
+            'body'=>$orderInfo['body']??"",
             'out_trade_no'=>$orderInfo['out_trade_no'],
             'total_fee'=>$orderInfo['amount'],
             'trade_type'=>$is_micro_app?'JSAPI':'APP',
@@ -171,7 +171,7 @@ class Client
     /**
      * 微信支付到零钱
      */
-    public function Transfers($orderInfo){
+    public function WxTransfers($orderInfo){
         //①、获取当前访问页面的用户openid（如果给指定用户转账，则直接填写指定用户的openid)
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
         $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid

@@ -15,6 +15,9 @@ class Notify
         $params=$_POST;
         $notify=new AlipayNotify($config);
         $result=$notify->rsaCheck($params);
+        if($result===true){
+            echo "success";
+        }
         return $result;
     }
 
