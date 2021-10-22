@@ -2,6 +2,7 @@
     "name": "iboxs/payment",
     "description": "composer",
     "type": "1",
+    "license": "MIT",
     "version": "1.0.0",
     "authors": [
         {
