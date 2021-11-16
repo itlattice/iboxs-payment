@@ -39,4 +39,14 @@ class Notify
         $result=$notify->Check();
         return $result;
     }
+    /**
+     * QQ验签（与微信相同，直接使用微信的）
+     * @param array $config QQ配置信息
+     * @return bool 验签成功返回true，失败返回false
+     */
+    public static function QqPayNotify($config){
+        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['key']);
+        $result=$notify->Check();
+        return $result;
+    }
 }

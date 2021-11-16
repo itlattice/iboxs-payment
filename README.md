@@ -53,7 +53,7 @@ WxJsapiParams | 微信小程序/APP支付 | 获取预支付码，后可在小程
 WxRefund | 微信支付退款 | 微信支付退款，可部分或全部退款，原路退回
 WxTransfers | 微信支付到零钱 | 使用微信支付向用户转账，直接转账到用户零钱内
     *其他接口陆续更新中
-    
+
 ##### 参数
 * Native支付（WxPayCode）、手机网页支付（WxPayWap）、微信小程序/APP支付(WxJsapiParams)需传入的$orderInfo参数需包含：
 ```
@@ -193,3 +193,47 @@ if($result==true){
     echo 'fail';
 }
 ```
+
+#### QQ支付示例代码：
+
+* 支付：
+
+``` php
+<?php
+namespace iboxs\test;
+require "../vendor/autoload.php";
+use iboxs\payment\Client;
+
+$qqpayconfig=[
+    'mchid'=>'1504922561',   //商户号
+    'apiKey'=>'',    //Key
+    'notify_url'=>'http://auth.itgz8.com/notify'   //异步通知地址
+];
+$orderInfo=array(
+    'order_name'=>"订单测试",  //订单名称
+    'amount'=>1,  //订单金额
+    'out_trade_no'=>"2021101247845"   //订单号
+);
+$qqpay=new Client($qqpayconfig);
+var_dump($qqpay->QQPay($orderInfo));
+```
+
+* 回调
+
+```
+<?php
+require "../vendor/autoload.php";
+use iboxs\payment\Notify;
+$qqpayconfig=[
+    'mchid'=>'1504922561',   //商户号
+    'apiKey'=>'',    //Key
+    'notify_url'=>'http://auth.itgz8.com/notify'   //异步通知地址
+];
+$result=Notify::QqPayNotify($qqpayconfig);  //调用QQ回调验签 //返回布尔型，真为验证通过，可以进行下一步，假为验证失败
+if($result==true){
+    //进行订单操作(这里不用输出任何数据，接口内已经输出了)
+} else{
+    echo 'fail';
+}
+```
+

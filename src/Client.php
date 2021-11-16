@@ -8,6 +8,7 @@ namespace iboxs\payment;
 
 use iboxs\payment\alipay\AlipayService;
 use iboxs\payment\extend\Common;
+use iboxs\payment\qqpay\QQPay;
 use iboxs\payment\wxpay\App;
 use iboxs\payment\wxpay\WxpayService;
 
@@ -17,13 +18,36 @@ class Client
 
     /**
      * 传入支付配置信息
-     * 如果需要支付宝支付就传入支付宝支付的配置信息，需要微信支付就传入微信支付配置信息，均为数组字典，具体格式参考文档及示例程序
+     * 如果需要支付宝支付就传入支付宝支付的配置信息，需要微信支付就传入微信支付配置信息，QQ支付就传入QQ支付配置信息，均为数组字典，具体格式参考文档及示例程序
      */
     public function __construct($config){
         if(!isset($config['gatewayUrl'])){
             $config['gatewayUrl']="https://openapi.alipay.com/gateway.do";
         }
         $this->config=$config;
+    }
+
+    /**
+     * QQ钱包支付发起（Native支付）
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return mixed 微信返回的信息，可在其中提取到二维码信息
+     */
+    public function QQPay($orderInfo){
+        //$this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']
+        $qqArr = [
+            "mch_id"     => $this->config['mchid'],//商户号
+            "notify_url" => $this->config['notify_url'],//异步通知回调地址
+            "key"        => $this->config['apiKey'],//商户key
+        ];
+        $qqPay = new QQPay($qqArr);
+        $param = [
+            "out_trade_no"  =>  $orderInfo['out_trade_no'],// 订单号         
+            "trade_type"    =>  "NATIVE",// 固定值          
+            "total_fee"     =>  $orderInfo['amount']*100,// 单位为分            
+            "body"          =>  $orderInfo['order_name'],//订单标题     
+        ];
+        $unified = $qqPay->unifiedOrder($param);
+        return $unified;
     }
 
     /**
