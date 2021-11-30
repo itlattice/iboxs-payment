@@ -1,12 +1,12 @@
 <?php
 return [
-    'publicKey' =>"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAimHpm3JN15T3b6iY9kOziG0cm7kjfvKxHHpLvYp33zIsiZN9QMs6L0RdwrfMqFbLyesF+5+BAcZlHON5+xjCbeEPwTBWgTemwspL5Q888ndhfy9M7Vq+cxtbgymUwZ7MdCP8UQCQyD5q2KT1LxuT7S8/JZGtBj8TfK8h3+Ex6w5RAbkjiMTtd972IWUsee8UewxMnDCA6xjw6qG8wAig8Xal1SiCVHIOpOTvaFUj6knA4551TVmn7/e6DTVI5q4GlifxU0k7LasAcMnHw9ycbaJR2zNjLNKkqxyenotS1Lm4FEd63vDWgvakbet8BmCByBCKjryRLy0YcrREczKkNQIDAQAB", //公钥
-    'rsaPrivateKey' =>"MIIEpAIBAAKCAQEApqTffZ8d6koNPa2lfGLh86Ct5WQGCd1LRs0S0MQ31Ms7ooFXbs4ORa+Q0tp1FygolXk4MEhN8u/ff91quZbgKAztFuvgZCeWa4miFGzLNWTGKVg575JtOoduvUhKUhzSXQSTVuzNkR2JKC7h/UWKF8PMuhpwgEcgkZ4Ww9Tie8c28mFoQrcjtqAI3POwPDSXRCVgOlDvD8rkx+I/PE1i5zP1L4mcyF66EmeBOscpmGVJjAYE6lnNjIkg+vsyB0EdZP4L+fHdWDZ5UBnd7O4+vQT6LoCJwJnnuLopc3q+D5LSKHlJM6DQKSLK9mTrSZssai6Em/Yy558eAe5PVr5zZwIDAQABAoIBAQCH5aqQYmNd/hfANczfnDARovZNPH2kK8BIs9JlR68ULMysIHhx1z5SW/Np0FdulARMqTdGQKC4vh9wwdtYEA8q+iea6q7qXlJPzkTMDVDGcTEc5GMS2UGUWn/Xgo2BWxm+W43gdGrLrd99UoZfKgeMi9N37TnTkq2fsuFzwDcWorU9l2PjHJqbcNBqHDOG1Qosh3DCDCji1kKT2RdR/UmM5QB3g6uijoeZR5hocdtnI8MmsI/VEaMvbIE93XH/EfDZwGMY2EwgaoyiLZRNVPephzI7GnbmqgOievOocPWUOwXPCJVNyjoHTz8O8en22OfUdHOutYxFdEVOikCdrt6BAoGBANWlc3KvQ+H2j4JO0ATZXIGqfmLI02XVLMcZZ3c81bL5YRXxmTCuNTL3s3lrdj8hD4lq7rnNxQAVNTpFIMCjUlkiWQzBvYtW91AGrfdkSxUhdfrSlQmOiNd05T+7FJ/roU3kqrOGMbLmItsR2dMS8Fhty/2gvwXp+BRjVjv/iN4nAoGBAMeuDrrfWsMkOvwO8Yja5HTzkRMTyNldfiLYOc3yWYR0UFpp4Hw+SZJo2Iz9b/v/WaXtC2b2WaoWTHzpmdE6/QHyceS62o5w+W71Tv7bjiToBEujTmsefFQmnqCoMQQZ6Qw8zVofOhIvSuETkkesePOfNYFz8hXWCqffGRBdzEjBAoGAEnAs/oDRwvacfAqBOWno6efk8HGUjP1Q1/4BR/EgIEoVbudi6Sifvr5R5vC3S8t2o81uvOpdThyGc3jz0qxFtxuXw9oUmanvviBVczxcnn48yGDUK/b5KF8WSeHDbenQCgDqGoRCVcY2y+FGg0jnJTqUmFb/JWuD1X6dOqBbF5ECgYEAxmpc1LBQ3gvIWOL4e0cXMGc+xzgnomZWioVVmyGwdf+mQNFocczrCoMIe8DyX/Nyv3/2jo9ItcyGoLD3WYNGGYMyTVinCFeWY/16S6Ebc+zhJ8/Ugni+jlf51CaM3kho3PImE+FnsN4xh8oM1w+4+ExBvKrb6XrRB9KWcz7hWYECgYBHr5ygiaWahQCVlLjsWRdbd+BatXK/LbQVD05NobWMUBSgyBwJi0e1uTAHbcDPghRt2Eq62ENzxafkYB0Wjy88AVd7FpPn1qAqoRUX1Uy/Q+34nwTJz3cJNW2oUYiNmCOJo0VMNsI2cCczDQdgPkJjRXYPOki7gPb8yc6yU5T6Tw==", //私钥
-    'appid' => "2016092400584872",
-    'notify_url' => "http://weapp.floridict.cn/notify",
-    'return_url' => "http://weapp.floridict.cn/notify",
+    'publicKey' =>"", //公钥
+    'rsaPrivateKey' =>"", //私钥
+    'appid' => "",
+    'notify_url' => "",
+    'return_url' => "",
     'charset' => "UTF-8",
     'sign_type'=>"RSA2",
-    'gatewayUrl' =>"https://openapi.alipaydev.com/gateway.do",
+    'gatewayUrl' =>"https://openapi.alipay.com/gateway.do",
 ];
 ?>
