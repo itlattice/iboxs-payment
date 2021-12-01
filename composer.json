@@ -3,7 +3,7 @@
     "description": "支付宝/微信支付/QQ钱包集成包",
     "type": "1",
     "license": "MIT",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "authors": [
         {
             "name": "zqu",
