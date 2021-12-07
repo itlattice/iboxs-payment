@@ -14,5 +14,5 @@ var_dump($wxpay->WxPayCode($orderInfo));
 
 /**
  * 回调验证：
- * $result=Notify::WxPayNotify($wxpayconfig);   //返回布尔型，真为验证通过，可以进行下一步，假为验证失败
+ * $result=Notify::WxPayNotify($wxpayconfig);   ////返回回调数组信息，若返回false的为验签失败
  */

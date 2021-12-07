@@ -164,6 +164,33 @@ class Client
     }
 
     /**
+     * 支付宝转账状态查询
+     * @param array $orderInfo 转账订单信息（具体构建方式参考文档readme.md）
+     * @return array 支付宝反馈信息
+     */
+    public function AlipayTransferQuery($orderInfo){
+        $aliPay = new AlipayService();
+        $aliPay->setAppid($this->config['appid']);
+        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
+        if( (!isset($orderInfo['outBizBo'])) || (!isset($orderInfo['orderId']))){
+            return '商户订单号和支付宝转账单据号至少要有一个';
+        }
+        $arr=[];
+        if(isset($orderInfo['outBizBo'])){
+            $arr['outBizBo']=$orderInfo['outBizBo'];
+        } else{
+            $arr['outBizBo']='';
+        }
+        if(isset($orderInfo['orderId'])){
+            $arr['orderId']=$orderInfo['orderId'];
+        } else{
+            $arr['orderId']='';
+        }
+        $result = $aliPay->TransferQuery($arr['outBizBo'],$arr['orderId']);
+        return $result;
+    }
+
+    /**
      * 微信支付获取二维码（一般用于pc端支付），获取的为二维码信息，需将二维码信息转换为二维码图片
      * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
      * @return mixed 微信返回的信息，可在其中提取到二维码信息

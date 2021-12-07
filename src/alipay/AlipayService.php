@@ -177,7 +177,7 @@ class AlipayService
             'biz_content'=>json_encode($requestConfigs),
         );
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
-        $result = $this->curlPost('https://openapi.alipay.com/gateway.do',$commonConfigs);
+        $result = $this->curlPost($this->GatewayUrl,$commonConfigs);
         $result = iconv('GBK','UTF-8',$result);
         return json_decode($result,true);
     }
@@ -203,7 +203,7 @@ class AlipayService
             'biz_content'=>json_encode($requestConfigs),
         );
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
-        $result = $this->curlPost('https://openapi.alipay.com/gateway.do',$commonConfigs);
+        $result = $this->curlPost($this->GatewayUrl,$commonConfigs);
         $resultArr = json_decode($result,true);
         if(empty($resultArr)){
             $result = iconv('GBK','UTF-8//IGNORE',$result);
@@ -243,6 +243,26 @@ class AlipayService
             return json_decode($result,true);
         }
         return $resultArr;
+    }
+
+    public function TransferQuery($outBizBo,$orderId){
+        $requestConfigs = array(
+            'out_biz_no'=>$outBizBo,
+            'order_id'=>$orderId,
+        );
+        $commonConfigs = array(
+            'app_id' => $this->appId,
+            'method' => 'alipay.fund.trans.order.query',
+            'format' => 'JSON',
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        $result = $this->curlPost($this->GatewayUrl,$commonConfigs);
+        return json_decode($result,true);
     }
 
     public function curlPost($url = '', $postData = '', $options = array())
