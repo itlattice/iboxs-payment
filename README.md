@@ -49,6 +49,7 @@
 
 
 - 已提供接口有：
+
 | 接口 | 函数 | 备注 |
 | --- | --- | --- |
 | AlipayWeb | 网页支付 | 不用区分手机电脑，会自动识别后调用不同接口 |
@@ -56,8 +57,8 @@
 | AlipayRefund | 支付宝单笔退款 | 可部分退款或全部退款 |
 | AlipayJsPay | 支付宝Js支付 | 可用于多个场景，包括APP、小程序、支付宝内网页 |
 | AlipayBarCode | 支付宝条码支付 | 条码当面付，传入条码后账户扣款 |
-| AlipayTransfer | 支付宝转账到个人账户 |  1|
-| AlipayTransferQuery | 支付宝转账结果查询 |1 |
+| AlipayTransfer | 支付宝转账到个人账户 |  |
+| AlipayTransferQuery | 支付宝转账结果查询 | |
 
 ```
 *其他接口陆续更新中
