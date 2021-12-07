@@ -15,6 +15,7 @@ class AlipayService
     protected $orderName;
     protected $refundAmount;
     protected $GatewayUrl='https://openapi.alipay.com/gateway.do';
+    protected $authCode;
 
     public function __construct()
     {
@@ -66,6 +67,11 @@ class AlipayService
 
     public function setRefundAmount($amount){
         $this->refundAmount=$amount;
+    }
+
+    public function setAuthCode($authCode)
+    {
+        $this->authCode = $authCode;
     }
 
     
@@ -142,6 +148,68 @@ class AlipayService
         $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
         $result = $this->curlPost($this->GatewayUrl,$commonConfigs);
         return $result;
+    }
+
+    public function barCodePay($store_id='DEDEMAO_001'){
+        if($store_id==null){
+            $store_id='DEDEMAO_001';
+        }
+        //请求参数
+        $requestConfigs = array(
+            'out_trade_no'=>$this->outTradeNo,
+            'scene'=>'bar_code',                //条码支付固定传入bar_code
+            'auth_code'=>$this->authCode,         //用户付款码，25~30开头的长度为16~24位的数字，实际字符串长度以开发者获取的付款码长度为准
+            'total_amount'=>$this->totalFee,      //单位 元
+            'subject'=>$this->orderName,          //订单标题
+            'store_id'=>$store_id,          //商户门店编号
+            'timeout_express'=>'2m',            //交易超时时间
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $this->appId,
+            'method' => 'alipay.trade.pay',             //接口名称
+            'format' => 'JSON',
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'notify_url' => $this->notifyUrl,
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        $result = $this->curlPost('https://openapi.alipay.com/gateway.do',$commonConfigs);
+        $result = iconv('GBK','UTF-8',$result);
+        return json_decode($result,true);
+    }
+
+    public function transfer($account,$realName,$totalFee,$remark){
+        $requestConfigs = array(
+            'out_biz_no'=>$this->outTradeNo,
+            'payee_type'=>'ALIPAY_LOGONID',
+            'payee_account'=>$account,   //收款账户
+            'payee_real_name'=>$realName,  //收款方真实姓名
+            'amount'=>$totalFee, //转账金额，单位：元。
+            'remark'=>$remark,  //转账备注（选填）
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $this->appId,
+            'method' => 'alipay.fund.trans.toaccount.transfer',             //接口名称
+            'format' => 'JSON',
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        $result = $this->curlPost('https://openapi.alipay.com/gateway.do',$commonConfigs);
+        $resultArr = json_decode($result,true);
+        if(empty($resultArr)){
+            $result = iconv('GBK','UTF-8//IGNORE',$result);
+            return json_decode($result,true);
+        }
+        return $resultArr;
     }
 
     /**
@@ -290,5 +358,45 @@ class AlipayService
             }
         }
         return $data;
+    }
+
+    /**
+     * 获取orderStr
+     * @return array
+     */
+    public function getOrderStr()
+    {
+        //请求参数
+        $requestConfigs = array(
+            'out_trade_no'=>$this->outTradeNo,
+            'total_amount'=>$this->totalFee, //单位 元
+            'subject'=>$this->orderName,  //订单标题
+            'product_code'=>'QUICK_MSECURITY_PAY', //销售产品码，商家和支付宝签约的产品码，为固定值QUICK_MSECURITY_PAY
+            'timeout_express'=>'2h',       //该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
+//            'store_id'=>'',                 //商户门店编号。该参数用于请求参数中以区分各门店，非必传项。
+//            'extend_params'=>array(
+//                'sys_service_provider_id'=>''       //系统商编号，该参数作为系统商返佣数据提取的依据，请填写系统商签约协议的PID
+//            )
+        );
+        $commonConfigs = array(
+            //公共参数
+            'app_id' => $this->appId,
+            'method' => 'alipay.trade.app.pay',             //接口名称
+            'format' => 'JSON',
+            'charset'=>$this->charset,
+            'sign_type'=>'RSA2',
+            'timestamp'=>date('Y-m-d H:i:s'),
+            'version'=>'1.0',
+            'notify_url' => $this->notifyUrl,
+            'biz_content'=>json_encode($requestConfigs),
+        );
+        $commonConfigs["sign"] = $this->generateSign($commonConfigs, $commonConfigs['sign_type']);
+        $result = $this->buildOrderStr($commonConfigs);
+        return $result;
+    }
+
+    public function buildOrderStr($data)
+    {
+        return http_build_query($data);
     }
 }

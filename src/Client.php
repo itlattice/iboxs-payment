@@ -88,7 +88,7 @@ class Client
         $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
         $aliPay->setOrderName($orderInfo['order_name']);
         $aliPay->setGatewayUrl($this->config['gatewayUrl']);
-        $result = $aliPay->codePay();
+        $result =json_decode($aliPay->codePay(),true);
         return $result;
     }
 
@@ -111,6 +111,56 @@ class Client
         }else{
             return $result;
         }
+    }
+
+    /**
+     * 支付宝Js支付（可用于多个场景，包括APP、小程序、支付宝内网页）
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return string 字符串，后面可使用AlipayJSBridge.call("tradePay", {orderStr: "<?php echo $orderStr?>"} 调起支付，具体查看支付宝文档
+     */
+    public function AlipayJsPay($orderInfo){
+        $aliPay = new AlipayService();
+        $aliPay->setAppid($this->config['appid']);
+        $aliPay->setNotifyUrl($this->config['notify_url']);
+        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
+        $aliPay->setTotalFee($orderInfo['amount']);
+        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
+        $aliPay->setOrderName($orderInfo['order_name']);
+        $orderStr = $aliPay->getOrderStr();
+        return $orderStr;
+    }
+
+    /**
+     * 支付宝条码支付（当面付）
+     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
+     * @return array 支付宝反馈信息，可取$result['code']：10000支付成功，10003 待用户支付，其他的则根据$result['msg']信息确定
+     */
+    public function AlipayBarCode($orderInfo){
+        $aliPay = new AlipayService();
+        $aliPay->setAppid($this->config['appid']);
+        $aliPay->setNotifyUrl($this->config['notify_url']);
+        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
+        $aliPay->setTotalFee($orderInfo['amount']);
+        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
+        $aliPay->setOrderName($orderInfo['order_name']);
+        $aliPay->setAuthCode($orderInfo['authCode']);
+        $result = $aliPay->barCodePay(isset($orderInfo['store_id'])?$orderInfo['store_id']:null);
+        $result = $result['alipay_trade_pay_response'];
+        return $result;
+    }
+
+    /**
+     * 支付宝转账到个人账户
+     * @param array $orderInfo 转账信息（具体构建方式参考文档readme.md）
+     * @return array 支付宝反馈信息
+     */
+    public function AlipayTransfer($orderInfo){
+        $aliPay = new AlipayService();
+        $aliPay->setAppid($this->config['appid']);
+        $aliPay->setNotifyUrl($this->config['notify_url']);
+        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
+        $result = $aliPay->transfer($orderInfo['account'],$orderInfo['real_name'],$orderInfo['amount'],$orderInfo['remark']);
+        return $result;
     }
 
     /**
