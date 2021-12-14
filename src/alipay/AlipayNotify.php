@@ -5,7 +5,7 @@ class AlipayNotify{
     protected $charset;
     public function __construct($config)
     {
-        $this->alipayPublicKey=$this->config['publicKey'];
+        $this->alipayPublicKey=$config['publicKey'];
         $this->charset = 'utf8';
         // $aliPay->setRsaPrivateKey();
     }
