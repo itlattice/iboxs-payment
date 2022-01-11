@@ -31,7 +31,7 @@
 
 > composer require iboxs/payment
 
-* 注意：**因本composer的仓库放置于国内的gitee上，composer安装后，文件夹下会多出一个.git文件夹，该文件夹可以删除，不影响使用**。（若要讲vendor下的文件也提交git的话建议删除）
+* 建议使用composer下载使用，本仓库已移入github，建议至github访问最新版，码云太扯淡不放新版本了（https://github.com/itlattice/iboxs-payment.git）
 
 - 也可以直接下载源代码后将src文件夹内的代码拷贝出来使用。
 
