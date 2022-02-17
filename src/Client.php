@@ -89,7 +89,7 @@ class Client
         $aliPay->setOrderName($orderInfo['order_name']);
         $aliPay->setGatewayUrl($this->config['gatewayUrl']);
         $result =json_decode($aliPay->codePay(),true);
-        return $result;
+        return $result['alipay_trade_precreate_response'];
     }
 
     /**
@@ -230,8 +230,13 @@ class Client
      */
     public function WxJsPay($orderInfo){
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
-        if(!$openId) exit('获取openid失败');
+        // $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
+        // if(!$openId) exit('获取openid失败');
+        $openId=$orderInfo['openid']??null;
+        if($openId==null){
+            $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
+            if(!$openId) exit('获取openid失败');
+        }
         $outTradeNo = $orderInfo['out_trade_no'];     //你自己的商品订单号
         $payAmount =$orderInfo['amount'];         //付款金额，单位:元
         $orderName = $orderInfo['order_name'];    //订单标题
@@ -287,8 +292,11 @@ class Client
     public function WxTransfers($orderInfo){
         //①、获取当前访问页面的用户openid（如果给指定用户转账，则直接填写指定用户的openid)
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
-        if(!$openId) exit('获取openid失败');
+        $openId=$orderInfo['openid']??null;
+        if($openId==null){
+            $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
+            if(!$openId) exit('获取openid失败');
+        }
         //②、付款
         $outTradeNo = $orderInfo['out_trade_no'];     //订单号
         $payAmount = $orderInfo['amount'];           //转账金额，单位:元。转账最小金额为1元

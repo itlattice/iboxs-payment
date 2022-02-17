@@ -38,7 +38,8 @@ class Notify
      * @return bool|array 验签成功返回回调信息，失败返回false
      */
     public static function WxPayNotify($config){
-        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['key']);
+        header("Content-type: text/xml");
+        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['apiKey']);
         $result=$notify->Check();
         $notifiedData = file_get_contents('php://input');
         //XML格式转换
