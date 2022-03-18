@@ -8,7 +8,7 @@ class alipayBase{
     protected $config=[];
     protected $GatewayUrl='';
 
-    protected function __construct($config)
+    public function __construct($config)
     {
         $this->config=$config;
         $this->GatewayUrl=$config['gatewayUrl'];

@@ -4,7 +4,7 @@ namespace iboxs\payment\factory;
 use iboxs\payment\factory\alipay\CodePay;
 use iboxs\payment\factory\alipay\Transfer;
 use iboxs\payment\factory\alipay\WapPay;
-use iboxs\payment\factory\alipay\WebPay;
+use iboxs\payment\factory\alipay\{WebPay,barCodePay};
 
 /**
  * 支付宝支付
@@ -72,6 +72,30 @@ class Alipay extends Base{
             'remark'=>$remark,  //转账备注（选填）
         );
         $payClass=new Transfer($this->config);
+        return $payClass->Main($requestConfigs);
+    }
+
+    /**
+     * 支付宝条形码支付
+     * @param string $outTradeNo 商户订单号
+     * @param string $authCode 条形码信息
+     * @param double $amount 金额
+     * @param string $orderName 订单名称
+     * @param string $express 超时时间
+     * @param string $store_id 门店编号
+     * @return mixed
+     */
+    public function barCodePay(string $outTradeNo, string $authCode, float $amount, $orderName, $express='2m', $store_id='IBOXS_001'){
+        $requestConfigs = array(
+            'out_trade_no'=>$outTradeNo,
+            'scene'=>'bar_code',                //条码支付固定传入bar_code
+            'auth_code'=>$authCode,         //用户付款码，25~30开头的长度为16~24位的数字，实际字符串长度以开发者获取的付款码长度为准
+            'total_amount'=>$amount,      //单位 元
+            'subject'=>$orderName,          //订单标题
+            'store_id'=>$store_id,          //商户门店编号
+            'timeout_express'=>$express,            //交易超时时间
+        );
+        $payClass=new barCodePay($this->config);
         return $payClass->Main($requestConfigs);
     }
 }
