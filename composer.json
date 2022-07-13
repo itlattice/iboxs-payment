@@ -3,7 +3,7 @@
     "description": "支付宝/微信支付/QQ钱包/Paypal PHP开发集成包",
     "type": "1",
     "license": "MIT",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "authors": [
         {
             "name": "zqu",
