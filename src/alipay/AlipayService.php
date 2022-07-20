@@ -74,6 +74,12 @@ class AlipayService
         $this->authCode = $authCode;
     }
 
+    protected $refundOrder;
+
+    public function setRefundOrder($refundorder){
+        $this->refundOrder=$refundorder;
+    }
+
     
 
     public function webPay()
@@ -223,6 +229,7 @@ class AlipayService
             'trade_no'=>$this->tradeNo,
             'out_trade_no'=>$this->outTradeNo,
             'refund_amount'=>$this->refundAmount,
+            'out_request_no'=>$this->refundOrder
         );
         $commonConfigs = array(
             //公共参数

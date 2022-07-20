@@ -38,7 +38,8 @@ class Notify
      * @return bool|array 验签成功返回回调信息，失败返回false
      */
     public static function WxPayNotify($config){
-        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['key']);
+        header("Content-type: text/xml");
+        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['apiKey']);
         $result=$notify->Check();
         $notifiedData = file_get_contents('php://input');
         //XML格式转换
@@ -62,5 +63,29 @@ class Notify
         $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['key']);
         $result=$notify->Check();
         return $result;
+    }
+
+    public static function payPalNotify(){
+        //获取回调结果
+        $json_data = self::get_JsonData();
+        //自己打印$json_data的值看有那些是你业务上用到的
+        //比如我用到
+        $data['invoice'] = $json_data['resource']['invoice_number'];
+        $data['txn_id'] = $json_data['resource']['id'];
+        $data['total'] = $json_data['resource']['amount']['total'];
+        $data['status'] = isset($json_data['status'])?$json_data['status']:'';
+        $data['state'] = $json_data['resource']['state'];
+        echo 'success';
+        return $data;
+    }
+
+    private static function get_JsonData(){
+        $json = file_get_contents('php://input');
+        file_put_contents(runtime_path().'put.log',$json.PHP_EOL,FILE_APPEND);
+        if ($json) {
+            $json = str_replace("'", '', $json);
+            $json = json_decode($json,true);
+        }
+        return $json;
     }
 }

@@ -8,6 +8,7 @@ namespace iboxs\payment;
 
 use iboxs\payment\alipay\AlipayService;
 use iboxs\payment\extend\Common;
+use iboxs\payment\paypal\PayPal;
 use iboxs\payment\qqpay\QQPay;
 use iboxs\payment\wxpay\App;
 use iboxs\payment\wxpay\WxpayService;
@@ -20,7 +21,7 @@ class Client
      * 传入支付配置信息
      * 如果需要支付宝支付就传入支付宝支付的配置信息，需要微信支付就传入微信支付配置信息，QQ支付就传入QQ支付配置信息，均为数组字典，具体格式参考文档及示例程序
      */
-    public function __construct($config){
+    public function __construct($config=[]){
         if(!isset($config['gatewayUrl'])){
             $config['gatewayUrl']="https://openapi.alipay.com/gateway.do";
         }
@@ -89,7 +90,7 @@ class Client
         $aliPay->setOrderName($orderInfo['order_name']);
         $aliPay->setGatewayUrl($this->config['gatewayUrl']);
         $result =json_decode($aliPay->codePay(),true);
-        return $result;
+        return $result['alipay_trade_precreate_response'];
     }
 
     /**
@@ -104,10 +105,11 @@ class Client
         $aliPay->setTradeNo($orderInfo['tradeNo']);
         $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
         $aliPay->setRefundAmount($orderInfo['refund_amount']);
+        $aliPay->setRefundOrder($orderInfo['out_request_no']);
         $result = $aliPay->doRefund();
         $result = $result['alipay_trade_refund_response'];
         if($result['code'] && $result['code']=='10000'){
-            return true;
+            return $result;
         }else{
             return $result;
         }
@@ -212,6 +214,7 @@ class Client
      * @return mixed 会自动跳转至微信内完成支付
      */
     public function WxPayWap($orderInfo){
+        unset($this->config['gatewayUrl']);
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
         $wxPay->setTotalFee($orderInfo['amount']);
         $wxPay->setOutTradeNo($orderInfo['out_trade_no']);
@@ -219,9 +222,10 @@ class Client
         $wxPay->setNotifyUrl($this->config['notify_url']);
         $wxPay->setWapUrl($this->config['return_url']);
         $wxPay->setWapName($orderInfo['order_name']);
-        $mwebUrl= $wxPay->H5Pay($$orderInfo['amount'],$orderInfo['out_trade_no'],$orderInfo['order_name'],$this->config['notify_url']);
-        header("Location: {$mwebUrl}");
-        exit();
+        $mwebUrl= $wxPay->H5Pay($orderInfo['amount'],$orderInfo['out_trade_no'],$orderInfo['order_name'],$this->config['notify_url']);
+        // header("Location: {$mwebUrl}");
+        // exit();
+        return $mwebUrl;
     }
     /**
      * 微信公众号支付
@@ -230,8 +234,13 @@ class Client
      */
     public function WxJsPay($orderInfo){
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
-        if(!$openId) exit('获取openid失败');
+        // $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
+        // if(!$openId) exit('获取openid失败');
+        $openId=$orderInfo['openid']??null;
+        if($openId==null){
+            $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
+            if(!$openId) exit('获取openid失败');
+        }
         $outTradeNo = $orderInfo['out_trade_no'];     //你自己的商品订单号
         $payAmount =$orderInfo['amount'];         //付款金额，单位:元
         $orderName = $orderInfo['order_name'];    //订单标题
@@ -287,8 +296,11 @@ class Client
     public function WxTransfers($orderInfo){
         //①、获取当前访问页面的用户openid（如果给指定用户转账，则直接填写指定用户的openid)
         $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
-        if(!$openId) exit('获取openid失败');
+        $openId=$orderInfo['openid']??null;
+        if($openId==null){
+            $openId = $wxPay->GetOpenid($orderInfo['code']);      //获取openid
+            if(!$openId) exit('获取openid失败');
+        }
         //②、付款
         $outTradeNo = $orderInfo['out_trade_no'];     //订单号
         $payAmount = $orderInfo['amount'];           //转账金额，单位:元。转账最小金额为1元
@@ -296,5 +308,13 @@ class Client
         $desc=$orderInfo['desc'];
         $result = $wxPay->createJsBizPackage($openId,$payAmount,$outTradeNo,$trueName,$desc);
         return $result;
+    }
+
+    /**
+     * 发起Paypal支付
+     */
+    public function PayPalPay($orderInfo){
+        $pay=new PayPal();
+        return $pay->payment($orderInfo['amount'],$orderInfo['out_trade_no']);
     }
 }

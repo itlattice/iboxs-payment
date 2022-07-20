@@ -18,7 +18,10 @@ class WxpayNotify{
             'appid' => $this->appid,
             'key' => $this->apiKey,
         );
-        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+        $postStr = file_get_contents("php://input");;
+        if(substr_count($postStr,'<!DOCTYPE')>0||substr_count($postStr,'<!ENTITY')>0){
+            die('滚');
+        }
         $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($postObj === false) {
             die('parse xml error');
