@@ -144,34 +144,39 @@ class WxpayService
      * 发起订单
      * @return array
      */
-    public function H5Pay($amount,$out_trade_no,$order_name,$notify_url)
+    public function H5Pay()
     {
         $config = array(
             'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->apiKey,
+            'apiKey' => $this->apiKey,
         );
+        $wapName=$this->wapName;
+        if(strlen($wapName)>3*10){
+            $wapName=substr($wapName,0,30);
+        }
         $scene_info = array(
             'h5_info' =>array(
                 'type'=>'Wap',
                 'wap_url'=>$this->wapUrl,
-                'wap_name'=>$this->wapName,
+                'wap_name'=>$wapName,
             )
         );
         $unified = array(
             'appid' => $config['appid'],
             'attach' => 'pay',             //商家数据包，原样返回，如果填写中文，请注意转换为utf-8
-            'body' => $order_name,
+            'body' => $this->orderName,
             'mch_id' => $config['mch_id'],
             'nonce_str' => self::createNonceStr(),
-            'notify_url' => $notify_url,
-            'out_trade_no' => $out_trade_no,
+            'notify_url' => $this->notifyUrl,
+            'out_trade_no' => $this->outTradeNo,
             'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
-            'total_fee' => intval($amount * 100),       //单位 转为分
+            'total_fee' => intval($this->totalFee * 100),       //单位 转为分
             'trade_type' => 'MWEB',
             'scene_info'=>json_encode($scene_info)
         );
-        $unified['sign'] = self::getSign($unified, $config['key']);
+        $unified['sign'] = self::getSign($unified, $config['apiKey']);
+        
         $responseXml = self::curlPost('https://api.mch.weixin.qq.com/pay/unifiedorder', self::arrayToXml($unified));
         $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($unifiedOrder->return_code != 'SUCCESS') {
@@ -203,39 +208,6 @@ class WxpayService
         curl_close($ch);
         return $data;
     }
-
-    public static function curlPostCert($url = '', $postData = '', $options = array()){
-        $isdir=config_path().'/Json/cert/';
-        $ch = curl_init();//初始化curl
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);//设置执行最长秒数
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//要求结果为字符串且输出到屏幕上
-        curl_setopt($ch, CURLOPT_URL, $url);//抓取指定网页
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);// 终止从服务端进行验证
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);//
-        curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');//证书类型
-        curl_setopt($ch, CURLOPT_SSLCERT, $isdir . 'apiclient_cert.pem');//证书位置
-        curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');//CURLOPT_SSLKEY中规定的私钥的加密类型
-        curl_setopt($ch, CURLOPT_SSLKEY, $isdir . 'apiclient_key.pem');//证书位置
-        curl_setopt($ch, CURLOPT_CAINFO, 'PEM');
-        curl_setopt($ch, CURLOPT_CAINFO, $isdir . 'rootca.pem');
-        if (!empty($options)) {
-            curl_setopt_array($ch, $options);
-        }
-        curl_setopt($ch, CURLOPT_POST, 1);//post提交方式
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);//全部数据使用HTTP协议中的"POST"操作来发送
-        
-        $data = curl_exec($ch);//执行回话
-        if ($data) {
-            curl_close($ch);
-            return $data;
-        } else {
-            $error = curl_errno($ch);
-            echo "call faild, errorCode:$error\n";
-            curl_close($ch);
-            return false;
-        }
-    }
-
     public static function createNonceStr($length = 16)
     {
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -300,7 +272,7 @@ class WxpayService
         $config = array(
             'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->apiKey,
+            'apiKey' => $this->apiKey,
         );
         //$orderName = iconv('GBK','UTF-8',$orderName);
         $unified = array(
@@ -315,7 +287,7 @@ class WxpayService
             'total_fee' => intval($totalFee * 100),       //单位 转为分
             'trade_type' => 'NATIVE',
         );
-        $unified['sign'] = self::getSign($unified, $config['key']);
+        $unified['sign'] = self::getSign($unified, $config['apiKey']);
         $responseXml = self::curlPost('https://api.mch.weixin.qq.com/pay/unifiedorder', self::arrayToXml($unified));
         $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($unifiedOrder === false) {
@@ -337,7 +309,7 @@ class WxpayService
             "signType" => 'MD5',
             "code_url" => $codeUrl[0],
         );
-        $arr['paySign'] = self::getSign($arr, $config['key']);
+        $arr['paySign'] = self::getSign($arr, $config['apiKey']);
         return $arr;
     }
 
@@ -346,8 +318,9 @@ class WxpayService
         $config = array(
             'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->apiKey,
+            'apiKey' => $this->apiKey,
         );
+        // $orderName = iconv('GBK','UTF-8',$orderName);
         $unified = array(
             'appid' => $config['appid'],
             'attach' => 'pay',             //商家数据包，原样返回，如果填写中文，请注意转换为utf-8
@@ -361,11 +334,9 @@ class WxpayService
             'total_fee' => intval($totalFee * 100),       //单位 转为分
             'trade_type' => 'JSAPI',
         );
-        // dd($unified);
-        $unified['sign'] = self::getSign($unified, $config['key']);
+        $unified['sign'] = self::getSign($unified, $config['apiKey']);
         $responseXml = self::curlPost('https://api.mch.weixin.qq.com/pay/unifiedorder', self::arrayToXml($unified));
         $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
-        // dd($unifiedOrder);
         if ($unifiedOrder === false) {
             die('parse xml error');
         }
@@ -382,7 +353,7 @@ class WxpayService
             "package" => "prepay_id=" . $unifiedOrder->prepay_id,
             "signType" => 'MD5',
         );
-        $arr['paySign'] = self::getSign($arr, $config['key']);
+        $arr['paySign'] = self::getSign($arr, $config['apiKey']);
         return $arr;
     }
 
@@ -400,7 +371,7 @@ class WxpayService
         $config = array(
             'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->apiKey,
+            'apiKey' => $this->apiKey,
         );
         $unified = array(
             'appid' => $config['appid'],
@@ -414,10 +385,19 @@ class WxpayService
             'out_refund_no'=>$refundNo,        //商户退款单号
             'refund_desc'=>$desc,     //退款原因（选填）
         );
-        $unified['sign'] = self::getSign($unified, $config['key']);
-        $responseXml = $this->curlPostCert('https://api.mch.weixin.qq.com/secapi/pay/refund', self::arrayToXml($unified));
-        $unifiedOrder = json_decode(json_encode(simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA)),true);
-        return $unifiedOrder;
+        $unified['sign'] = self::getSign($unified, $config['apiKey']);
+        $responseXml = $this->curlPost('https://api.mch.weixin.qq.com/secapi/pay/refund', self::arrayToXml($unified));
+        $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if ($unifiedOrder === false) {
+            die('parse xml error');
+        }
+        if ($unifiedOrder->return_code != 'SUCCESS') {
+            die($unifiedOrder->return_msg);
+        }
+        if ($unifiedOrder->result_code != 'SUCCESS') {
+            die($unifiedOrder->err_code);
+        }
+        return true;
     }
 
     /**
@@ -435,7 +415,7 @@ class WxpayService
         $config = array(
             'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->apiKey,
+            'apiKey' => $this->apiKey,
         );
         $unified = array(
             'mch_appid' => $config['appid'],
@@ -449,9 +429,18 @@ class WxpayService
             'amount' => intval($totalFee * 100),       //单位 转为分
             'desc'=>$desc,            //企业付款操作说明信息
         );
-        $unified['sign'] = self::getSign($unified, $config['key']);
-        $responseXml = $this->curlPostCert('https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers', self::arrayToXml($unified));
-        $unifiedOrder = json_decode(json_encode(simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA)),true);
-        return $unifiedOrder;
+        $unified['sign'] = self::getSign($unified, $config['apiKey']);
+        $responseXml = $this->curlPost('https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers', self::arrayToXml($unified));
+        $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if ($unifiedOrder === false) {
+            die('parse xml error');
+        }
+        if ($unifiedOrder->return_code != 'SUCCESS') {
+            die($unifiedOrder->return_msg);
+        }
+        if ($unifiedOrder->result_code != 'SUCCESS') {
+            die($unifiedOrder->err_code);
+        }
+        return true;
     }
 }

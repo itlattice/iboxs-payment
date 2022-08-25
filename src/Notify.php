@@ -60,7 +60,7 @@ class Notify
      * @return bool|array 验签成功返回回调信息，失败返回false
      */
     public static function QqPayNotify($config){
-        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['key']);
+        $notify=new WxpayNotify($config['mchid'],$config['appid'],$config['apiKey']);
         $result=$notify->Check();
         return $result;
     }
@@ -81,7 +81,6 @@ class Notify
 
     private static function get_JsonData(){
         $json = file_get_contents('php://input');
-        file_put_contents(runtime_path().'put.log',$json.PHP_EOL,FILE_APPEND);
         if ($json) {
             $json = str_replace("'", '', $json);
             $json = json_decode($json,true);

@@ -16,10 +16,10 @@ class WxpayNotify{
         $config = array(
             'mch_id' => $this->mchid,
             'appid' => $this->appid,
-            'key' => $this->apiKey,
+            'apiKey' => $this->apiKey,
         );
-        $postStr = file_get_contents("php://input");;
-        if(substr_count($postStr,'<!DOCTYPE')>0||substr_count($postStr,'<!ENTITY')>0){
+        $postStr = file_get_contents("php://input");
+        if(substr_count($postStr,'<!DOCTYPE')>0||substr_count($postStr,'<!ENTITY')>0){  //微信会对回调接口进行安全测试，攻击服务器，这里是回应这些攻击请求的
             die('滚');
         }
         $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
@@ -34,7 +34,7 @@ class WxpayNotify{
         }
         $arr = (array)$postObj;
         unset($arr['sign']);
-        if (self::getSign($arr, $config['key']) == $postObj->sign) {
+        if (self::getSign($arr, $config['apiKey']) == $postObj->sign) {
             echo '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
             return true;
         } else{
