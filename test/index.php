@@ -1,2 +1,8 @@
-<a href="alipay.php">测试支付宝支付</a><br/>
-<a href="wxpay.php">测试微信支付</a>
+<?php
+namespace iboxs\test;
+require __DIR__."/../vendor/autoload.php";
+use iboxs\payment\Payment;
+$config=require_once __DIR__."/config.php";
+$result=Payment::Client('alipay',$config['alipay'])->alipayCodePay('2022',10,'名称','10m');
+var_dump($result);
+?>

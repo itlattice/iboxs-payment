@@ -1,9 +1,9 @@
 {
     "name": "iboxs/payment",
-    "description": "支付宝/微信支付/QQ钱包/Paypal PHP开发集成包",
+    "description": "支付宝/微信支付/QQ钱包集成包",
     "type": "1",
     "license": "MIT",
-    "version": "1.2.4",
+    "version": "1.2.1",
     "authors": [
         {
             "name": "zqu",
@@ -11,11 +11,21 @@
         }
     ],
     "require": {
-        "php": ">=5.3"
+        "php": ">=7.0",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-iconv": "*",
+      "ext-openssl": "*",
+      "ext-http": "*"
     },
     "autoload": {
         "psr-4": {
             "iboxs\\payment\\": "src/"
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "iboxs\\payment\\Client::install"
+        ]
     }
 }

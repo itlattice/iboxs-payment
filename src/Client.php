@@ -6,302 +6,87 @@
  */
 namespace iboxs\payment;
 
-use iboxs\payment\alipay\AlipayService;
-use iboxs\payment\extend\Common;
-use iboxs\payment\qqpay\QQPay;
-use iboxs\payment\wxpay\App;
-use iboxs\payment\wxpay\WxpayService;
+use Exception;
+use iboxs\payment\lib\Alipay;
+use iboxs\payment\lib\Base;
+use iboxs\payment\lib\QQPay;
+use iboxs\payment\lib\Wxpay;
+use mysql_xdevapi\Statement;
 
-class Client
+/**
+ * @see \iboxs\payment\lib\Base
+ * @package iboxs\payment
+ * @mixin \iboxs\payment\lib\Base
+ * @version 2.0
+ * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491 微信：itlattices
+ * @license MIT
+ * @method static string alipayWebpay(string $no,float $amount,string $orderName) 支付宝网页支付（含手机端和PC端）
+ * @method static array alipayCodePay(string $no,float $amount,string $orderName,string $time_out='30m') 获取支付宝当面付二维码
+ * @method static array alipayRefund(string $trade_no,string $out_trade_no,float $refound_amount,string $refound_order)  支付宝订单退款
+ * @method static string alipayJsPay(string $no,float $amount,string $orderName,string $time_out='30m') 支付宝JS支付（小程序、APP、生活号）
+ * @method static array alipayBarcodePay(string $no,string $barcode,float $amount,string $orderName,string $store_id='shop_001',string $time_out='2m') 支付宝条形码支付
+ * @method static array alipayTransfer(string $biz_no,string $account,string $real_name,float $amount,string $remark)  支付宝转账
+ * @method static array alipayTransferQuery(string $biz_no,string $order_id)  //支付宝转账结果查询
+ * @method array objectToArray(object $array) 对象转Array
+ */
+class Client extends Base
 {
-    protected $config=[];
-
     /**
-     * 传入支付配置信息
-     * 如果需要支付宝支付就传入支付宝支付的配置信息，需要微信支付就传入微信支付配置信息，QQ支付就传入QQ支付配置信息，均为数组字典，具体格式参考文档及示例程序
+     * 实例化数据
+     * @param string $paymode 支付方式（alipay:支付宝;weixin:微信支付;pay_pal:PayPal支付;qqpay:QQ钱包支付）
+     * @param array $config 支付配置信息（一般框架内建议在config/payment.php内配置，若为活动配置，请传入，支付宝就传入支付宝的，微信就传入微信的）
      */
-    public function __construct($config=[],$pay_type=''){
+    public function __construct($paymode='alipay',$config=[])
+    {
         if($config==[]){
-            $config=config('payment'.$pay_type);
-        }
-        if(!isset($config['gatewayUrl'])){
-            $config['gatewayUrl']="https://openapi.alipay.com/gateway.do";
+            if(!function_exists('config')){
+                throw (new Exception('无配置数据'));
+            }
+            $config=config('payment.'.$paymode);
         }
         $this->config=$config;
     }
 
-    /**
-     * QQ钱包支付发起（Native支付）
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return mixed 微信返回的信息，可在其中提取到二维码信息
-     */
-    public function QQPay($orderInfo){
-        //$this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']
-        $qqArr = [
-            "mch_id"     => $this->config['mchid'],//商户号
-            "notify_url" => $this->config['notify_url'],//异步通知回调地址
-            "key"        => $this->config['apiKey'],//商户key
-        ];
-        $qqPay = new QQPay($qqArr);
-        $param = [
-            "out_trade_no"  =>  $orderInfo['out_trade_no'],// 订单号         
-            "trade_type"    =>  "NATIVE",// 固定值          
-            "total_fee"     =>  $orderInfo['amount']*100,// 单位为分            
-            "body"          =>  $orderInfo['order_name'],//订单标题     
-        ];
-        $unified = $qqPay->unifiedOrder($param);
-        return $unified;
-    }
-
-    /**
-     * 支付宝网页支付（会自动分手机端及pc端支付）
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * 本函数调用后会自动跳转至支付宝内支付，无需做任何处理
-     */
-    public function AlipayWeb($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setReturnUrl($this->config['return_url']);
-        $aliPay->setNotifyUrl($this->config['notify_url']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        $aliPay->setTotalFee($orderInfo['amount']);
-        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
-        $aliPay->setOrderName($orderInfo['order_name']);
-        $aliPay->setGatewayUrl($this->config['gatewayUrl']);
-        $sHtml="";
-        if(Common::is_mobile_request()){
-            $sHtml = $aliPay->wapPay();
-        } else{
-            $sHtml = $aliPay->webPay();
-        }
-        echo $sHtml;
-    }
-
-    /**
-     * 支付宝扫码支付获取二维码
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return mixed 支付宝返回的信息，可在其中提取到二维码信息后生成二维码
-     */
-    public function AlipayCode($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setNotifyUrl($this->config['notify_url']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        $aliPay->setTotalFee($orderInfo['amount']);
-        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
-        $aliPay->setOrderName($orderInfo['order_name']);
-        $aliPay->setGatewayUrl($this->config['gatewayUrl']);
-        $result =json_decode($aliPay->codePay(),true);
-        return $result['alipay_trade_precreate_response'];
-    }
-
-    /**
-     * 支付宝支付退款
-     * @param array $orderInfo 退款信息（具体构建方式参考文档readme.md）
-     * @return mixed 成功返回true，失败返回支付宝返回的数据
-     */
-    public function AlipayRefund($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        $aliPay->setTradeNo($orderInfo['tradeNo']);
-        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
-        $aliPay->setRefundAmount($orderInfo['refund_amount']);
-        $aliPay->setRefundOrder($orderInfo['out_request_no']);
-        $result = $aliPay->doRefund();
-        $result = $result['alipay_trade_refund_response'];
-        if($result['code'] && $result['code']=='10000'){
-            return $result;
+    public static function install(){
+        if(function_exists('root_path')){
+            $path=root_path('config')."/payment.php";
+            $text=__DIR__."/../test/config.php";
+            if(file_exists($text)){
+                $text=file_get_contents($text);
+            }
+            file_put_contents($path,$text);
         }
     }
 
-    /**
-     * 支付宝Js支付（可用于多个场景，包括APP、小程序、支付宝内网页）
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return string 字符串，后面可使用AlipayJSBridge.call("tradePay", {orderStr: "<?php echo $orderStr?>"} 调起支付，具体查看支付宝文档
-     */
-    public function AlipayJsPay($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setNotifyUrl($this->config['notify_url']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        $aliPay->setTotalFee($orderInfo['amount']);
-        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
-        $aliPay->setOrderName($orderInfo['order_name']);
-        $orderStr = $aliPay->getOrderStr();
-        return $orderStr;
-    }
-
-    /**
-     * 支付宝条码支付（当面付）
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return array 支付宝反馈信息，可取$result['code']：10000支付成功，10003 待用户支付，其他的则根据$result['msg']信息确定
-     */
-    public function AlipayBarCode($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setNotifyUrl($this->config['notify_url']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        $aliPay->setTotalFee($orderInfo['amount']);
-        $aliPay->setOutTradeNo($orderInfo['out_trade_no']);
-        $aliPay->setOrderName($orderInfo['order_name']);
-        $aliPay->setAuthCode($orderInfo['authCode']);
-        $result = $aliPay->barCodePay(isset($orderInfo['store_id'])?$orderInfo['store_id']:null);
-        $result = $result['alipay_trade_pay_response'];
-        return $result;
-    }
-
-    /**
-     * 支付宝转账到个人账户
-     * @param array $orderInfo 转账信息（具体构建方式参考文档readme.md）
-     * @return array 支付宝反馈信息
-     */
-    public function AlipayTransfer($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setNotifyUrl($this->config['notify_url']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        $result = $aliPay->transfer($orderInfo['account'],$orderInfo['real_name'],$orderInfo['amount'],$orderInfo['remark']);
-        return $result;
-    }
-
-    /**
-     * 支付宝转账状态查询
-     * @param array $orderInfo 转账订单信息（具体构建方式参考文档readme.md）
-     * @return array 支付宝反馈信息
-     */
-    public function AlipayTransferQuery($orderInfo){
-        $aliPay = new AlipayService();
-        $aliPay->setAppid($this->config['appid']);
-        $aliPay->setRsaPrivateKey($this->config['rsaPrivateKey']);
-        if( (!isset($orderInfo['outBizBo'])) || (!isset($orderInfo['orderId']))){
-            return '商户订单号和支付宝转账单据号至少要有一个';
+    public function __call($name, $arguments)
+    {
+        $name=$this->convertUnderline($name);
+        $arr=explode('_',$name);
+        if(count($arr)<2){
+            throw (new Exception('方法不存在'));
+            return;
         }
-        $arr=[];
-        if(isset($orderInfo['outBizBo'])){
-            $arr['outBizBo']=$orderInfo['outBizBo'];
-        } else{
-            $arr['outBizBo']='';
+        $fun='';
+        for($i=1;$i<count($arr);$i++){
+            $fun.=strtoupper(substr($arr[$i],0,1)).substr($arr[$i],1,strlen($arr[$i])-1);
         }
-        if(isset($orderInfo['orderId'])){
-            $arr['orderId']=$orderInfo['orderId'];
-        } else{
-            $arr['orderId']='';
+
+        $fun=strtolower(substr($fun,0,1)).substr($fun,1,strlen($fun)-1);
+        switch($arr[0]){
+            case 'alipay':
+                return (new Alipay($this->config))->$fun($arguments);
+                break;
+            case 'wxpay':
+                return (new Wxpay($this->config))->$fun($arguments);
+                break;
+            case 'qqpay':
+                return (new QQPay($this->config))->$fun($arguments);
+                break;
+            // case 'paypal':
+            //     (new Alipay($this->config))->$fun($arguments);
+            //     break;
+            default:
+                throw (new Exception('不支持的支付方式'));
         }
-        $result = $aliPay->TransferQuery($arr['outBizBo'],$arr['orderId']);
-        return $result;
-    }
-
-    /**
-     * 微信支付获取二维码（一般用于pc端支付），获取的为二维码信息，需将二维码信息转换为二维码图片
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return mixed 微信返回的信息，可在其中提取到二维码信息
-     */
-    public function WxPayCode($orderInfo){
-        $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $outTradeNo = $orderInfo['out_trade_no'];     //你自己的商品订单号
-        $payAmount = $orderInfo['amount'];          //付款金额，单位:元
-        $orderName = $orderInfo['order_name'];    //订单标题
-        $notifyUrl = $this->config['notify_url'];     //付款成功后的回调地址(不要有问号)
-        $payTime = time();      //付款时间
-        $arr = $wxPay->NativePay($payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
-        return $arr;
-    }
-
-    /**
-     * 微信手机网页端支付（微信内网页可以直接使用微信提供的js调起支付）
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return mixed 会自动跳转至微信内完成支付
-     */
-    public function WxPayWap($orderInfo){
-        $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $wxPay->setTotalFee($orderInfo['amount']);
-        $wxPay->setOutTradeNo($orderInfo['out_trade_no']);
-        $wxPay->setOrderName($orderInfo['order_name']);
-        $wxPay->setNotifyUrl($this->config['notify_url']);
-        $wxPay->setWapUrl($this->config['return_url']);
-        $wxPay->setWapName($orderInfo['order_name']);
-        $mwebUrl= $wxPay->H5Pay($orderInfo['amount'],$orderInfo['out_trade_no'],$orderInfo['order_name'],$this->config['notify_url']);
-        return $mwebUrl;
-    }
-    /**
-     * 微信公众号支付
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @param string $openId 用户openid
-     * @return mixed 返回微信返回的信息
-     */
-    public function WxJsPay($orderInfo,$openId){
-        $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $outTradeNo = $orderInfo['out_trade_no'];     //你自己的商品订单号
-        $payAmount =$orderInfo['amount'];         //付款金额，单位:元
-        $orderName = $orderInfo['order_name'];    //订单标题
-        $notifyUrl = $this->config['notify_url'];     //付款成功后的回调地址(不要有问号)
-        $payTime = time();      //付款时间
-        $jsApiParameters = $wxPay->JsPay($openId,$payAmount,$outTradeNo,$orderName,$notifyUrl,$payTime);
-        return $jsApiParameters;
-    }
-
-    /**
-     * 微信APP支付(获取支付码)
-     * @param array $orderInfo 订单信息（具体构建方式参考文档readme.md）
-     * @return mixed 返回微信返回的信息
-     */
-    public function WxJsapiParams($orderInfo,$is_micro_app=false){
-        $app=new App();
-        $params=array(
-            'body'=>$orderInfo['body']??"",
-            'out_trade_no'=>$orderInfo['out_trade_no'],
-            'total_fee'=>$orderInfo['amount'],
-            'trade_type'=>$is_micro_app?'JSAPI':'APP',
-            'appid'=>$this->config['appid'],
-            'mch_id'=>$this->config['mchid'],
-            'nonce_str'=>Common::genRandomString(),
-            'notify_url'=>$this->config['notify_url']
-        );
-        $result=$app->unifiedOrder($params);
-        return $result;
-    }
-
-    /**
-     * 微信支付退款
-     * @param array $orderInfo 退款信息（具体构建方式参考文档readme.md）
-     * @return mixed 返回微信返回的信息
-     */
-    public function WxRefund($orderInfo){
-        $orderNo = $orderInfo['out_trade_no'];                   //商户订单号（商户订单号与微信订单号二选一，至少填一个）
-        $wxOrderNo =  $orderInfo['trade_no'];                    //微信订单号（商户订单号与微信订单号二选一，至少填一个）
-        $totalFee =$orderInfo['amount'];                   //订单金额，单位:元
-        $refundFee = $orderInfo['refund_amount'];                 //退款金额，单位:元
-        $refundNo = $orderInfo['refund_trade_no'];        //退款订单号(可随机生成)
-        $desc=$orderInfo['desc'];  //说明
-        $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        $result = $wxPay->doRefund($totalFee, $refundFee, $refundNo, $wxOrderNo,$orderNo,$desc);
-        return $result;
-    }
-
-    /**
-     * 微信支付到零钱
-     * @param array $orderInfo 转账信息（具体构建方式参考文档readme.md）
-     * @param string $openId 用户openid
-     * @return mixed 返回微信返回的信息
-     */
-    public function WxTransfers($orderInfo,$openId){
-        //①、获取当前访问页面的用户openid（如果给指定用户转账，则直接填写指定用户的openid)
-        $wxPay = new WxpayService($this->config['mchid'] ,$this->config['appid'],$this->config['apiKey']);
-        //②、付款
-        $outTradeNo = $orderInfo['out_trade_no'];     //订单号
-        $payAmount = $orderInfo['amount'];           //转账金额，单位:元。转账最小金额为1元
-        $trueName = $orderInfo['real_name'];         //收款人真实姓名
-        $desc=$orderInfo['desc'];
-        $result = $wxPay->createJsBizPackage($openId,$payAmount,$outTradeNo,$trueName,$desc);
-        return $result;
-    }
-
-    /**
-     * 发起Paypal支付
-     */
-    public function PayPalPay($orderInfo){
-        $pay=new PayPal();
-        return $pay->payment($orderInfo['amount'],$orderInfo['out_trade_no']);
     }
 }
