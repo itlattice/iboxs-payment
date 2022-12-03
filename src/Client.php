@@ -11,8 +11,6 @@ use iboxs\payment\lib\Alipay;
 use iboxs\payment\lib\Base;
 use iboxs\payment\lib\QQPay;
 use iboxs\payment\lib\Wxpay;
-use mysql_xdevapi\Statement;
-
 /**
  * @see \iboxs\payment\lib\Base
  * @package iboxs\payment
