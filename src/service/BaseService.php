@@ -103,16 +103,12 @@ class BaseService{
         return $sHtml;
     }
 
-    public function curlPost($url = '', $postData = '', $options = array())
-    {
-        if (is_array($postData)) {
-            $postData = http_build_query($postData);
-        }
+    public function httpPost($url,$data){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30); //设置cURL允许执行的最长秒数
         if (!empty($options)) {
             curl_setopt_array($ch, $options);
@@ -120,13 +116,61 @@ class BaseService{
         //https请求 不验证证书和host
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        $data = curl_exec($ch);
+        $result = curl_exec($ch);
         curl_close($ch);
-        $resultArr = json_decode($data,true);
+        return $result;
+    }
+
+    public function curlPost($url = '', $postData = '', $options = array())
+    {
+        if (is_array($postData)) {
+            $postData = http_build_query($postData);
+        }
+        $result=$this->httpPost($url,$postData);
+        $resultArr = json_decode($result,true);
         if(empty($resultArr)){
-            $data = iconv('GBK','UTF-8//IGNORE',$data);
+            $data = iconv('GBK','UTF-8//IGNORE',$result);
             return json_decode($data,true);
         }
-        return json_decode($data,true);
+        return json_decode($result,true);
+    }
+
+    public function createNonceStr($length = 16)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $str = '';
+        for ($i = 0; $i < $length; $i++) {
+            $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+        }
+        return $str;
+    }
+
+    /**
+     * 获取签名
+     */
+    public function getSign($params, $key)
+    {
+        ksort($params, SORT_STRING);
+        $unSignParaString = $this->formatQueryParaMap($params, false);
+        $signStr = strtoupper(md5($unSignParaString . "&key=" . $key));
+        return $signStr;
+    }
+    protected function formatQueryParaMap($paraMap, $urlEncode = false)
+    {
+        $buff = "";
+        ksort($paraMap);
+        foreach ($paraMap as $k => $v) {
+            if (null != $v && "null" != $v) {
+                if ($urlEncode) {
+                    $v = urlencode($v);
+                }
+                $buff .= $k . "=" . $v . "&";
+            }
+        }
+        $reqPar = '';
+        if (strlen($buff) > 0) {
+            $reqPar = substr($buff, 0, strlen($buff) - 1);
+        }
+        return $reqPar;
     }
 }
