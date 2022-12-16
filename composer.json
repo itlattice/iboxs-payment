@@ -11,15 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "ext-json": "*",
-        "ext-curl": "*",
-        "ext-iconv": "*",
-      "ext-openssl": "*",
-      "ext-http": "*",
-      "ext-simplexml": "*",
-      "ext-libxml": "*",
-      "ext-mbstring": "*"
+        "php": ">=7.0"
     },
     "autoload": {
         "psr-4": {
