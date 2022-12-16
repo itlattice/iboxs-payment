@@ -20,13 +20,15 @@ use mysql_xdevapi\Statement;
  * @version 2.0
  * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491 微信：itlattices
  * @license MIT
- * @method static string alipayWebpay(string $no,float $amount,string $orderName) 支付宝网页支付（含手机端和PC端）
+ * @method static void alipayWebpay(string $no,float $amount,string $orderName) 支付宝网页支付（含手机端和PC端）[直接跳转]
  * @method static array alipayCodePay(string $no,float $amount,string $orderName,string $time_out='30m') 获取支付宝当面付二维码
  * @method static array alipayRefund(string $trade_no,string $out_trade_no,float $refound_amount,string $refound_order)  支付宝订单退款
  * @method static string alipayJsPay(string $no,float $amount,string $orderName,string $time_out='30m') 支付宝JS支付（小程序、APP、生活号）
  * @method static array alipayBarcodePay(string $no,string $barcode,float $amount,string $orderName,string $store_id='shop_001',string $time_out='2m') 支付宝条形码支付
  * @method static array alipayTransfer(string $biz_no,string $account,string $real_name,float $amount,string $remark)  支付宝转账
  * @method static array alipayTransferQuery(string $biz_no,string $order_id)  //支付宝转账结果查询
+ * @method static string wechatCodePay(string $no,float $amount,string $orderName) 微信Native支付（一般用于PC端）,返回二维码的信息
+ * @method static void wechatH5Pay(string $no,float $amount,string $orderName) 微信H5支付（一般用于手机网页端，非公众号）[直接跳转]
  * @method array objectToArray(object $array) 对象转Array
  */
 class Client extends Base
@@ -50,7 +52,7 @@ class Client extends Base
     public static function install(){
         if(function_exists('root_path')){
             $path=root_path('config')."/payment.php";
-            $text=__DIR__."/../test/config.php";
+            $text=__DIR__."/../test/config_example.php";
             if(file_exists($text)){
                 $text=file_get_contents($text);
             }
@@ -83,7 +85,7 @@ class Client extends Base
                 return (new QQPay($this->config))->$fun($arguments);
                 break;
             // case 'paypal':
-            //     (new Alipay($this->config))->$fun($arguments);
+            //     return (new Alipay($this->config))->$fun($arguments);
             //     break;
             default:
                 throw (new Exception('不支持的支付方式'));

@@ -25,6 +25,7 @@ class Alipay extends payBase
             $sHtml = $aliPay->webPay();
         }
         echo $sHtml;
+        exit();
     }
 
     public function codePay($orderInfo){

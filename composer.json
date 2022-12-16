@@ -16,7 +16,10 @@
         "ext-curl": "*",
         "ext-iconv": "*",
       "ext-openssl": "*",
-      "ext-http": "*"
+      "ext-http": "*",
+      "ext-simplexml": "*",
+      "ext-libxml": "*",
+      "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
