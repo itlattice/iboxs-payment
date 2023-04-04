@@ -32,7 +32,7 @@ class alipayService extends BaseService{
             'subject'=>$this->payInfo['subject'],  //订单标题
         ];
         $this->commonConfigs['method']='alipay.trade.page.pay';
-        $this->commonConfigs['biz_content']=$requestConfigs;
+        $this->commonConfigs['biz_content']=json_encode($requestConfigs,256);
         $this->commonConfigs["sign"] = $this->generateSign($this->commonConfigs, $this->commonConfigs['sign_type']);
         return $this->buildRequestForm($this->commonConfigs);
     }
@@ -45,7 +45,7 @@ class alipayService extends BaseService{
             'subject'=>$this->payInfo['subject'],  //订单标题
         );
         $this->commonConfigs['method']='alipay.trade.wap.pay';
-        $this->commonConfigs['biz_content']=$requestConfigs;
+        $this->commonConfigs['biz_content']=json_encode($requestConfigs,256);
         $this->commonConfigs["sign"] = $this->generateSign($this->commonConfigs, $this->commonConfigs['sign_type']);
         return $this->buildRequestForm($this->commonConfigs);
     }

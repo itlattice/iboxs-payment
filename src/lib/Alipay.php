@@ -19,7 +19,7 @@ class Alipay extends payBase
         ];
         $aliPay = new alipayService($data,$this->config);
         $sHtml="";
-        if($this->is_mobile_request() && $this->config['has_mobile']){
+        if($this->is_mobile_request() && ($this->config['has_mobile']??false)){
             $sHtml = $aliPay->wapPay();
         } else{
             $sHtml = $aliPay->webPay();
