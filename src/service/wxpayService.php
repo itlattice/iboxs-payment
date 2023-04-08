@@ -12,11 +12,11 @@ class wxpayService extends BaseService{
         $this->commonConfigs= array(
             'mch_id' => $config['mchid'],
             'appid' => $config['appid'],
-            'apiKey' => $$config['apiKey'],
+            'apiKey' => $config['apiKey'],
         );
         $this->unified=[
             'appid' => $config['appid'],
-            'mch_id' => $config['mch_id'],
+            'mch_id' => $config['mchid'],
             'nonce_str' => $this->createNonceStr()
         ];
     }

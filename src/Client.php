@@ -76,7 +76,7 @@ class Client extends Base
             case 'alipay':
                 return (new Alipay($this->config))->$fun($arguments);
                 break;
-            case 'wxpay':
+            case 'wechat':
                 return (new Wxpay($this->config))->$fun($arguments);
                 break;
             case 'qqpay':

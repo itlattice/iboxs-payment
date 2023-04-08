@@ -20,7 +20,7 @@ class weixinService extends BaseService{
             'appid' => $this->wechatConfig['appid'],
             'attach' => 'pay',             //商家数据包，原样返回，如果填写中文，请注意转换为utf-8
             'body' => $this->payInfo['subject'],
-            'mch_id' => $this->wechatConfig['mch_id'],
+            'mch_id' => $this->wechatConfig['mchid'],
             'nonce_str' => $this->createNonceStr(),
             'notify_url' => $this->payConfig['notify_url'],
             'out_trade_no' => $this->payInfo['out_trade_no'],
@@ -31,10 +31,10 @@ class weixinService extends BaseService{
         $unified['sign'] =$this->getSign($unified, $this->wechatConfig['apiKey']);
         $unifiedOrder =$this->curlPostXml('https://api.mch.weixin.qq.com/pay/unifiedorder',$this->arrayToXml($unified));
         if ($unifiedOrder->return_code != 'SUCCESS') {
-            die($unifiedOrder->return_msg);
+            throw (new Exception($unifiedOrder->return_msg));
         }
         if ($unifiedOrder->result_code != 'SUCCESS') {
-            die($unifiedOrder->err_code);
+            throw (new Exception($unifiedOrder->err_code));
         }
         $codeUrl = (array)($unifiedOrder->code_url);
         if(!$codeUrl[0]) exit('get code_url error');
