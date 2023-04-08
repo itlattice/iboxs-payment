@@ -4,7 +4,7 @@ namespace iboxs\payment\service;
 use iboxs\payment\lib\Base;
 
 class alipayNotifyService extends Base{
-    protected $config;
+    public $config;
 
     public function __construct($config)
     {
