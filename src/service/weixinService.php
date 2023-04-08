@@ -2,6 +2,8 @@
 
 namespace iboxs\payment\service;
 
+use mysql_xdevapi\Exception;
+
 class weixinService extends BaseService{
     protected $wechatConfig=[];
 
@@ -69,7 +71,7 @@ class weixinService extends BaseService{
         $unified['sign'] = self::getSign($unified, $this->payConfig['apiKey']);
         $unifiedOrder =$this->curlPostXml('https://api.mch.weixin.qq.com/pay/unifiedorder', self::arrayToXml($unified));
         if ($unifiedOrder->return_code != 'SUCCESS') {
-            die($unifiedOrder->return_msg);
+            throw(new Exception($unifiedOrder->return_msg));
         }
         if($unifiedOrder->mweb_url){
             return $unifiedOrder->mweb_url;

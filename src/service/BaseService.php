@@ -1,5 +1,7 @@
 <?php
 namespace iboxs\payment\service;
+use mysql_xdevapi\Exception;
+
 class BaseService{
 
     protected $payInfo=[];
@@ -303,13 +305,13 @@ class BaseService{
         $responseXml =$this->httpPost(self::HOST.$url,$this->arrayToXml($unified),$use_cert);
         $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($unifiedOrder === false) {
-            die('parse xml error');
+            throw(new Exception('parse xml error'));
         }
         if ($unifiedOrder->return_code != 'SUCCESS') {
-            die($unifiedOrder->return_msg);
+            throw(new Exception($unifiedOrder->return_msg));
         }
         if ($unifiedOrder->result_code != 'SUCCESS') {
-            die($unifiedOrder->err_code);
+            throw(new Exception($unifiedOrder->err_code));
         }
         return $unifiedOrder;
     }
