@@ -37,4 +37,14 @@ class Payment
     {
         return self::Client("wechat",$config);
     }
+
+    /**
+     * 发起QQ钱包支付
+     * @param $config
+     * @return Client
+     */
+    public static function QQPay($config=[])
+    {
+        return self::Client("qqpay",$config);
+    }
 }

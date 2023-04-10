@@ -2,7 +2,7 @@
 
 namespace iboxs\payment\service;
 
-use mysql_xdevapi\Exception;
+use Exception;
 
 class weixinService extends BaseService{
     protected $wechatConfig=[];
