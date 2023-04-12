@@ -3,56 +3,74 @@ namespace iboxs\payment\service;
 
 use iboxs\payment\lib\Base;
 
-class alipayNotifyService extends Base{
-    public $config;
-
-    public function __construct($config)
+class wechatNotifyService extends Base{
+    protected $mchid;
+    protected $appid;
+    protected $apiKey;
+    public function __construct($mchid, $appid, $key)
     {
-        $this->config=$config;
+        $this->mchid = $mchid;
+        $this->appid = $appid;
+        $this->apiKey = $key;
     }
-
-    public function check($params){
-        $sign = $params['sign'];
-        $signType = $params['sign_type'];
-        unset($params['sign_type']);
-        unset($params['sign']);
-        return $this->verify($this->getSignContent($params), $sign, $signType);
-    }
-
-    function verify($data, $sign, $signType = 'RSA') {
-        $pubKey= $this->alipayPublicKey;
-        $res = "-----BEGIN PUBLIC KEY-----\n" .
-            wordwrap($pubKey, 64, "\n", true) .
-            "\n-----END PUBLIC KEY-----";
-        ($res) or die('支付宝RSA公钥错误。请检查公钥文件格式是否正确');
-
-        //调用openssl内置方法验签，返回bool值
-        if ("RSA2" == $signType) {
-            $result = (bool)openssl_verify($data, base64_decode($sign), $res, OPENSSL_ALGO_SHA256);
-        } else {
-            $result = (bool)openssl_verify($data, base64_decode($sign), $res);
+    public function Check()
+    {
+        $config = array(
+            'mch_id' => $this->mchid,
+            'appid' => $this->appid,
+            'apiKey' => $this->apiKey,
+        );
+        $postStr = file_get_contents("php://input");
+        if(substr_count($postStr,'<!DOCTYPE')>0||substr_count($postStr,'<!ENTITY')>0){  //微信会对回调接口进行安全测试，攻击服务器，这里是回应这些攻击请求的
+            die('滚');
         }
-        return $result;
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if ($postObj === false) {
+            die('parse xml error');
+        }
+        if ($postObj->return_code != 'SUCCESS') {
+            die($postObj->return_msg);
+        }
+        if ($postObj->result_code != 'SUCCESS') {
+            die($postObj->err_code);
+        }
+        $arr = (array)$postObj;
+        unset($arr['sign']);
+        if (self::getSign($arr, $config['apiKey']) == $postObj->sign) {
+            echo '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
+            return true;
+        } else{
+            return false;
+        }
     }
 
-    public function getSignContent($params) {
-        ksort($params);
-        $stringToBeSigned = "";
-        $i = 0;
-        foreach ($params as $k => $v) {
-            if (false === $this->checkEmpty($v) && "@" != substr($v, 0, 1)) {
-                // 转换成目标字符集
-                $v = $this->characet($v, $this->charset);
-                if ($i == 0) {
-                    $stringToBeSigned .= "$k" . "=" . "$v";
-                } else {
-                    $stringToBeSigned .= "&" . "$k" . "=" . "$v";
+    /**
+     * 获取签名
+     */
+    public static function getSign($params, $key)
+    {
+        ksort($params, SORT_STRING);
+        $unSignParaString = self::formatQueryParaMap($params, false);
+        $signStr = strtoupper(md5($unSignParaString . "&key=" . $key));
+        return $signStr;
+    }
+    protected static function formatQueryParaMap($paraMap, $urlEncode = false)
+    {
+        $buff = "";
+        ksort($paraMap);
+        foreach ($paraMap as $k => $v) {
+            if (null != $v && "null" != $v) {
+                if ($urlEncode) {
+                    $v = urlencode($v);
                 }
-                $i++;
+                $buff .= $k . "=" . $v . "&";
             }
         }
-        unset ($k, $v);
-        return $stringToBeSigned;
+        $reqPar = '';
+        if (strlen($buff) > 0) {
+            $reqPar = substr($buff, 0, strlen($buff) - 1);
+        }
+        return $reqPar;
     }
 
 }
