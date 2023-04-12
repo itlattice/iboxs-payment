@@ -23,7 +23,10 @@ return [
         'appid'=>'',  //APPID（公众号支付、JS支付必须）
         'apiKey'=>'',  //商户Key
         'notify_url'=>'',  //异步回调地址
-        'return_url'=>''  //同步回调地址
+        'return_url'=>'',  //同步回调地址
+        'password'=>'', // 操作员密码
+        'user_id'=>'' // 操作员账号
+
     ]
 ];
 ?>

@@ -27,6 +27,8 @@ use iboxs\payment\lib\Wxpay;
  * @method static array alipayTransferQuery(string $biz_no,string $order_id)  //支付宝转账结果查询
  * @method static string wechatCodePay(string $no,float $amount,string $orderName) 微信Native支付（一般用于PC端）,返回二维码的信息
  * @method static void wechatH5Pay(string $no,float $amount,string $orderName) 微信H5支付（一般用于手机网页端，非公众号）[直接跳转]
+ * @method static string qqpayCodepay(string $no,float $amount,string $orderName) QQ钱包Native支付
+ * @method static string qqpayRefund(string $trade_no,string $out_trade_no,float $refound_amount,string $subject,string $refound_order)  QQ钱包订单退款
  * @method array objectToArray(object $array) 对象转Array
  */
 class Client extends Base

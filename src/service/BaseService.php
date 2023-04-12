@@ -1,8 +1,11 @@
 <?php
 namespace iboxs\payment\service;
+use iboxs\payment\lib\Convert;
 use mysql_xdevapi\Exception;
 
 class BaseService{
+
+    use Convert;
 
     protected $payInfo=[];
     protected $payConfig=[];
