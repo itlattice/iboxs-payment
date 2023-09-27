@@ -1,16 +1,17 @@
 <?php
-namespace iboxs\payment\alipay;
-class AlipayNotify{
-    protected $alipayPublicKey;
-    protected $charset;
+namespace iboxs\payment\service;
+
+use iboxs\payment\lib\Base;
+
+class alipayNotifyService extends Base{
+    public $config;
+
     public function __construct($config)
     {
-        $this->alipayPublicKey=$config['publicKey'];
-        $this->charset = 'utf8';
-        // $aliPay->setRsaPrivateKey();
+        $this->config=$config;
     }
 
-    public function rsaCheck($params) {
+    public function check($params){
         $sign = $params['sign'];
         $signType = $params['sign_type'];
         unset($params['sign_type']);
@@ -27,14 +28,10 @@ class AlipayNotify{
 
         //调用openssl内置方法验签，返回bool值
         if ("RSA2" == $signType) {
-            $result = (bool)openssl_verify($data, base64_decode($sign), $res, version_compare(PHP_VERSION,'5.4.0', '<') ? SHA256 : OPENSSL_ALGO_SHA256);
+            $result = (bool)openssl_verify($data, base64_decode($sign), $res, OPENSSL_ALGO_SHA256);
         } else {
             $result = (bool)openssl_verify($data, base64_decode($sign), $res);
         }
-//        if(!$this->checkEmpty($this->alipayPublicKey)) {
-//            //释放资源
-//            openssl_free_key($res);
-//        }
         return $result;
     }
 
@@ -58,35 +55,4 @@ class AlipayNotify{
         return $stringToBeSigned;
     }
 
-    /**
-     * 校验$value是否非空
-     *  if not set ,return true;
-     *    if is null , return true;
-     **/
-    protected function checkEmpty($value) {
-        if (!isset($value))
-            return true;
-        if ($value === null)
-            return true;
-        if (trim($value) === "")
-            return true;
-        return false;
-    }
-
-    /**
-     * 转换字符集编码
-     * @param $data
-     * @param $targetCharset
-     * @return string
-     */
-    function characet($data, $targetCharset) {
-        if (!empty($data)) {
-            $fileType = $this->charset;
-            if (strcasecmp($fileType, $targetCharset) != 0) {
-                $data = mb_convert_encoding($data, $targetCharset, $fileType);
-                //$data = iconv($fileType, $targetCharset.'//IGNORE', $data);
-            }
-        }
-        return $data;
-    }
 }

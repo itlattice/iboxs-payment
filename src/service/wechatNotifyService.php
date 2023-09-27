@@ -1,7 +1,9 @@
 <?php
-namespace iboxs\payment\wxpay;
-class WxpayNotify{
+namespace iboxs\payment\service;
 
+use iboxs\payment\lib\Base;
+
+class wechatNotifyService extends Base{
     protected $mchid;
     protected $appid;
     protected $apiKey;
@@ -70,4 +72,5 @@ class WxpayNotify{
         }
         return $reqPar;
     }
+
 }
