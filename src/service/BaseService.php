@@ -1,12 +1,11 @@
 <?php
 namespace iboxs\payment\service;
-use iboxs\payment\lib\Common;
 use iboxs\payment\lib\Convert;
 use mysql_xdevapi\Exception;
 
 class BaseService{
 
-    use Convert,Common;
+    use Convert;
 
     protected $payInfo=[];
     protected $payConfig=[];
@@ -304,37 +303,19 @@ class BaseService{
         return $xml;
     }
 
-    public function wechatResult($url,$unified,$method,$use_cert=false){
-        if($method=='get'){
-            $body='';
-        } else{
-            $body=json_encode($unified,JSON_UNESCAPED_UNICODE);
+    public function wechatResult($url,$unified,$use_cert=false){
+        $unified['sign'] = $this->getSign($unified,$this->payConfig['apiKey']);
+        $responseXml =$this->httpPost(self::HOST.$url,$this->arrayToXml($unified),$use_cert);
+        $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if ($unifiedOrder === false) {
+            throw(new Exception('parse xml error'));
         }
-//        $unified['sign'] = $this->getSign($unified,$this->payConfig['apiKey']);
-//        $responseXml =$this->httpPost(self::HOST.$url,$this->arrayToXml($unified),$use_cert);
-//        $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
-//        if ($unifiedOrder === false) {
-//            throw(new Exception('parse xml error'));
-//        }
-//        if ($unifiedOrder->return_code != 'SUCCESS') {
-//            throw(new Exception($unifiedOrder->return_msg));
-//        }
-//        if ($unifiedOrder->result_code != 'SUCCESS') {
-//            throw(new Exception($unifiedOrder->err_code));
-//        }
-//        return $unifiedOrder;
-        $url=self::HOST.$url;
-        $url_parts = parse_url($url);
-        $canonical_url = ($url_parts['path'] . (!empty($url_parts['query']) ? "?${url_parts['query']}" : ""));
-        $nonce=strtoupper($this->GetRandStr());
-        $message = $method."\n".
-            $canonical_url."\n".
-            time()."\n".
-            $nonce."\n".
-            $body."\n";
-        openssl_sign($message, $raw_sign, $mch_private_key, 'sha256WithRSAEncryption');
-
-
-        var_dump($url);
+        if ($unifiedOrder->return_code != 'SUCCESS') {
+            throw(new Exception($unifiedOrder->return_msg));
+        }
+        if ($unifiedOrder->result_code != 'SUCCESS') {
+            throw(new Exception($unifiedOrder->err_code));
+        }
+        return $unifiedOrder;
     }
 }

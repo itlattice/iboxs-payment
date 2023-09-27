@@ -16,7 +16,11 @@ return [
         'appid'=>'',  //APPID（公众号支付、JS支付必须）
         'apiKey'=>'',  //商户Key
         'notify_url'=>'',  //异步回调地址
-        'return_url'=>''  //同步回调地址（H5支付必须）
+        'return_url'=>'',  //同步回调地址（H5支付必须）
+        'merchantPrivateKeyFilePath'=>'', //商户API私钥证书文件地址
+        'merchantCertificateSerial'=>'', //「商户API证书」的「证书序列号」
+        'platformCertificateFilePath'=>'', //微信支付平台证书文件地址
+        'platformCertificateSerial'=>'' //「微信支付平台证书」中获取「证书序列号」
     ],
     'qqpay'=>[
         'mchid'=>'',  //商户号

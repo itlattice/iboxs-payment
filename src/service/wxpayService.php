@@ -6,8 +6,6 @@ class wxpayService extends BaseService{
     protected $commonConfigs;
     protected $unified;
 
-    protected $Authorization;
-
     public function __construct($data, $config)
     {
         parent::__construct($data, $config);
@@ -34,7 +32,7 @@ class wxpayService extends BaseService{
             'trade_type' => 'NATIVE',
         ];
         $unified=array_merge($this->unified,$unified2);
-        $unifiedOrder=$this->wechatResult('v3/pay/transactions/native',$unified);
+        $unifiedOrder=$this->wechatResult('pay/unifiedorder',$unified);
         $codeUrl = (array)($unifiedOrder->code_url);
         if(!$codeUrl[0]) exit('get code_url error');
         return $codeUrl[0];
