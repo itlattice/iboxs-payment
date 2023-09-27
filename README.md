@@ -13,7 +13,17 @@
 - 本项目要求PHP最低版本为5.3
 - 请尽量使用composer安装最新版本，最新版本需要使用composer安装，旧版本可能存在问题；
 
-  
+### 本项目安装方式：
+
+- 可使用composer直接安装：
+
+> composer require iboxs/payment
+
+* 建议使用composer下载使用，本仓库已移入github，建议至github访问最新版，码云太扯淡不放新版本了（https://github.com/itlattice/iboxs-payment.git）
+
+- 也可以直接下载源代码后将src文件夹内的代码拷贝出来使用。
+- 本项目是composer包，需使用composer安装后使用。
+- 若需协助接入的，请联系zqu1016@qq.com或QQ320587491
 
 ### 更新注意
 
@@ -21,25 +31,13 @@
   * 验签成功是返回支付宝/微信的通知信息（已转换为数组字典）
   * 验签失败直接返回false
 * 新增了PayPal的接入，若需使用PayPal，需同时安装包：paypal/rest-api-sdk-php,若无需PayPal支付的则不需要安装该包
-    ```
-    composer require paypal/rest-api-sdk-php
-    ```
 
-
-
-### 本项目安装方式：
-
-
-- 可使用composer直接安装：
-
-
-
-> composer require iboxs/payment
-
-* 建议使用composer下载使用，本仓库已移入github，建议至github访问最新版，码云太扯淡不放新版本了（https://github.com/itlattice/iboxs-payment.git）
-
-- 也可以直接下载源代码后将src文件夹内的代码拷贝出来使用。
-
+```
+composer require paypal/rest-api-sdk-php
+```
+* 注意
+  * PayPal的扩展包仅在需要PayPal时使用，无需接入PayPal的无需安装，本插件的安装方式在下面；
+  * 注意，PayPal的支付方式与国内的支付宝、微信不同，而是采取用户系统请求PayPal获取地址后，向PayPal网站跳转，然后用户在PayPal网站完成授权后同步跳转返回用户网站，此时并没有支付完毕，返回用户网站时会携带一个秘钥字符串，需再次使用该秘钥向PayPal发送请求，此时在PayPal返回success即为支付成功，否则均为支付失败。不存在类似支付宝、微信的异步同步回调。一定别忘了最后一步，否则用户是没有付款完成的。
 
 
 ### 使用方法：
