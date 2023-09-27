@@ -11,7 +11,7 @@ return [
         'gatewayUrl' =>"https://openapi.alipay.com/gateway.do",  //支付宝接口地址（若为沙箱环境的记得改为https://openapi.alipaydev.com/gateway.do）
         'has_mobile'=>false //是否已开通手机H5网页支付，若已开通，若用户为手机访问且调用网页支付接口时，会默认跳转手机端支付接口
     ],
-    'wexin'=>[
+    'weixin'=>[
         'mchid'=>'',  //商户号
         'appid'=>'',  //APPID（公众号支付、JS支付必须）
         'apiKey'=>'',  //商户Key

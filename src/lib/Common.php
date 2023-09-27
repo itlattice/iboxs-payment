@@ -77,4 +77,22 @@ trait Common{
         }
         return $data;
     }
+
+    /**
+     * 获取随机字符串
+     * @param int $length 随机字符串长度
+     * @return string
+     */
+    public function GetRandStr(int $length = 32): string
+    {
+        //字符组合
+        $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $len = strlen($str) - 1;
+        $randStr = '';
+        for ($i = 0; $i < $length; $i++) {
+            $num = mt_rand(0, $len);
+            $randStr .= $str[$num];
+        }
+        return $randStr;
+    }
 }

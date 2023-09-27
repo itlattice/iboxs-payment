@@ -44,6 +44,7 @@ class Client extends Base
      */
     public function __construct($paymode='alipay',$config=[])
     {
+        var_dump($config);
         if($config==[]){
             if(!function_exists('config')){
                 throw (new Exception('无配置数据'));
