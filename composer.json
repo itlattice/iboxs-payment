@@ -3,7 +3,6 @@
     "description": "支付宝/微信支付/QQ钱包集成包",
     "type": "1",
     "license": "MIT",
-    "version": "1.2.1",
     "authors": [
         {
             "name": "zqu",
@@ -11,12 +10,18 @@
         }
     ],
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "ext-openssl": "*",
+        "ext-curl": "*",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
             "iboxs\\payment\\": "src/"
-        }
+        },
+        "files": [
+            "src/helper.php"
+        ]
     },
     "scripts": {
         "post-install-cmd": [

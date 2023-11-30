@@ -1,11 +1,12 @@
 <?php
 namespace iboxs\payment\service;
 use iboxs\payment\lib\Convert;
+use iboxs\payment\untils\WechatRequest;
 use mysql_xdevapi\Exception;
 
 class BaseService{
 
-    use Convert;
+    use Convert,WechatRequest;
 
     protected $payInfo=[];
     protected $payConfig=[];
@@ -303,7 +304,11 @@ class BaseService{
         return $xml;
     }
 
-    public function wechatResult($url,$unified,$use_cert=false){
+    public function wechatResult($url,$unified){
+//        var_dump($url,$unified);
+        $url=$this->payConfig['host'].$url;
+        $result=$this->wechatPost($url,$unified);
+        dd($result);
         $unified['sign'] = $this->getSign($unified,$this->payConfig['apiKey']);
         $responseXml =$this->httpPost(self::HOST.$url,$this->arrayToXml($unified),$use_cert);
         $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);

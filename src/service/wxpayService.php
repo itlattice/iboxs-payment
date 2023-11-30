@@ -16,23 +16,32 @@ class wxpayService extends BaseService{
         );
         $this->unified=[
             'appid' => $config['appid'],
-            'mch_id' => $config['mchid'],
-            'nonce_str' => $this->createNonceStr()
+            'mchid' => $config['mchid']
         ];
     }
 
     public function codePay(){
         $unified2=[
-            'attach' => 'pay',             //商家数据包，原样返回，如果填写中文，请注意转换为utf-8
-            'body' => $this->payInfo['subject'],
-            'notify_url' => $this->payConfig['notify_url'],
-            'out_trade_no' => $this->payInfo['out_trade_no'],
-            'spbill_create_ip' => '127.0.0.1',
-            'total_fee' => intval($this->payInfo['total_amount'] * 100),       //单位 转为分
-            'trade_type' => 'NATIVE',
+            'description'=>$this->payInfo['subject'],
+            'out_trade_no'=> $this->payInfo['out_trade_no'],
+            'time_expire'=>wechatExpireTime($this->payInfo['time_expire']??null),
+            'attach'=>$this->payInfo['attach']??null,
+            'notify_url'=>$this->payConfig['notify_url'],
+            'goods_tag'=>$this->payInfo['goods_tag']??null,
+            'support_fapiao'=>$this->payConfig['support_fapiao'],
+            'amount'=>[
+                'total'=>intval($this->payInfo['total_amount'] * 100),
+                'currency'=>$this->payConfig['currency']
+            ],
+            'detail'=>$this->payInfo['detail']??null,
+            'scene_info'=>[
+                'payer_client_ip'=>'127.0.0.1'
+            ],
+            'settle_info'=>$this->payConfig['settle_info'],
         ];
+        $unified2=Nullify($unified2);
         $unified=array_merge($this->unified,$unified2);
-        $unifiedOrder=$this->wechatResult('pay/unifiedorder',$unified);
+        $unifiedOrder=$this->wechatResult('/v3/pay/transactions/native',$unified);
         $codeUrl = (array)($unifiedOrder->code_url);
         if(!$codeUrl[0]) exit('get code_url error');
         return $codeUrl[0];

@@ -12,15 +12,14 @@ return [
         'has_mobile'=>false //是否已开通手机H5网页支付，若已开通，若用户为手机访问且调用网页支付接口时，会默认跳转手机端支付接口
     ],
     'weixin'=>[
+        'host'=>'https://api.mch.weixin.qq.com',
         'mchid'=>'',  //商户号
         'appid'=>'',  //APPID（公众号支付、JS支付必须）
-        'apiKey'=>'',  //商户Key
+        'apiKey'=>'',  //APIV3秘钥
         'notify_url'=>'',  //异步回调地址
         'return_url'=>'',  //同步回调地址（H5支付必须）
         'merchantPrivateKeyFilePath'=>'', //商户API私钥证书文件地址
         'merchantCertificateSerial'=>'', //「商户API证书」的「证书序列号」
-        'platformCertificateFilePath'=>'', //微信支付平台证书文件地址
-        'platformCertificateSerial'=>'' //「微信支付平台证书」中获取「证书序列号」
     ],
     'qqpay'=>[
         'mchid'=>'',  //商户号

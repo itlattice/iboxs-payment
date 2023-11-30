@@ -9,8 +9,8 @@ $orderInfo=array(
     'amount'=>1,
     'out_trade_no'=>"2021101247845"
 );
-$wxpay=new Client($wxpayconfig);
-var_dump($wxpay->WxPayCode($orderInfo));
+$wxpay=new Client('wechat',$wxpayconfig);
+var_dump($wxpay->wechatCodePay($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name']));
 
 /**
  * 回调验证：
