@@ -16,7 +16,7 @@ use iboxs\payment\lib\Wxpay;
  * @package iboxs\payment
  * @mixin \iboxs\payment\lib\Base
  * @version 2.0
- * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491 微信：itlattices
+ * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491
  * @license MIT
  * @method static void alipayWebpay(string $no,float $amount,string $orderName) 支付宝网页支付（含手机端和PC端）[直接跳转]
  * @method static array alipayCodePay(string $no,float $amount,string $orderName,string $time_out='30m') 获取支付宝当面付二维码
@@ -25,8 +25,8 @@ use iboxs\payment\lib\Wxpay;
  * @method static array alipayBarcodePay(string $no,string $barcode,float $amount,string $order_name,string $store_id,string $time_out="2m") //支付宝条形码支付
  * @method static array alipayTransfer(string $biz_no,string $account,string $real_name,float $amount,string $remark)  支付宝转账
  * @method static array alipayTransferQuery(string $biz_no,string $order_id)  //支付宝转账结果查询
- * @method static string wechatCodePay(string $no,float $amount,string $orderName) 微信Native支付（一般用于PC端）,返回二维码的信息
- * @method static void wechatH5Pay(string $no,float $amount,string $orderName,string $wap_url) 微信H5支付（一般用于手机网页端，非公众号）[直接跳转]
+ * @method static array wechatCodePay(string $no,float $amount,string $orderName) 微信Native支付（一般用于PC端）,返回二维码的信息
+ * @method static array wechatH5Pay(string $no,float $amount,string $orderName) 微信H5支付（一般用于手机网页端，非公众号）[直接跳转]
  * @method static array wechatJsPay(string $no,float $amount,string $orderName,string $openid) 微信JS支付（一般用于公众号/小程序）
  * @method static array wechatApppay(string $no,float $amount,string $orderName,bool $trade_type=false) 微信APP支付
  * @method static array wechatRefund(string $no,float $total_amount,string $reson,float $refund_amount,string $transaction_id,string $out_refund_no) 微信退款

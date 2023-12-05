@@ -305,22 +305,8 @@ class BaseService{
     }
 
     public function wechatResult($url,$unified){
-//        var_dump($url,$unified);
         $url=$this->payConfig['host'].$url;
         $result=$this->wechatPost($url,$unified);
-        dd($result);
-        $unified['sign'] = $this->getSign($unified,$this->payConfig['apiKey']);
-        $responseXml =$this->httpPost(self::HOST.$url,$this->arrayToXml($unified),$use_cert);
-        $unifiedOrder = simplexml_load_string($responseXml, 'SimpleXMLElement', LIBXML_NOCDATA);
-        if ($unifiedOrder === false) {
-            throw(new Exception('parse xml error'));
-        }
-        if ($unifiedOrder->return_code != 'SUCCESS') {
-            throw(new Exception($unifiedOrder->return_msg));
-        }
-        if ($unifiedOrder->result_code != 'SUCCESS') {
-            throw(new Exception($unifiedOrder->err_code));
-        }
-        return $unifiedOrder;
+        return $result;
     }
 }

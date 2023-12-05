@@ -14,7 +14,7 @@ trait WechatRequest
             'Content-Type: application/json'
         ];
         $result=HttpCurl::post($url,$header,$data);
-        dd($result);
+        return $result;
     }
 
     private function getAuthorization($url,$params,$method='POST'){
