@@ -2,6 +2,7 @@
 namespace iboxs\test;
 require "../vendor/autoload.php";
 use iboxs\payment\Client;
+use iboxs\payment\Payment;
 
 $wxpayconfig=require("config/wxpay.php");
 $orderInfo=array(
@@ -10,8 +11,10 @@ $orderInfo=array(
     'out_trade_no'=>"2021101247845"
 );
 $wxpay=new Client('wechat',$wxpayconfig);
-var_dump($wxpay->wechatCodePay($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name']));
-
+//var_dump($wxpay->wechatCodePay($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name']));
+//var_dump($wxpay->wechatH5Pay($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name']));
+var_dump($wxpay->wechatRefund($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name'],'aaa'));
+//Payment::Wechat()
 /**
  * 回调验证：
  * $result=Notify::WxPayNotify($wxpayconfig);   ////返回回调数组信息，若返回false的为验签失败
