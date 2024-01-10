@@ -49,11 +49,11 @@ class BaseService{
         return $unifiedOrder;
     }
 
-    public function generateSign($params, $signType = "RSA") {
+    public function generateSign($params, $signType = "RSA2") {
         return $this->sign($this->getSignContent($params), $signType);
     }
 
-    protected function sign($data, $signType = "RSA") {
+    protected function sign($data, $signType = "RSA2") {
         $priKey=$this->payConfig['rsaPrivateKey'];
         $res = "-----BEGIN RSA PRIVATE KEY-----\n" .
             wordwrap($priKey, 64, "\n", true) .
@@ -175,6 +175,55 @@ class BaseService{
         curl_close($ch);
         return $result;
     }
+
+    public function postHttp($url,$params){
+        $options=array(
+            'http'=>[
+                'header' => 'Content-Type: application/x-www-form-urlencoded',
+                'method' => 'POST',
+                'content' => $params,
+                'timeout' => 50
+            ]
+        );
+        $context = stream_context_create($options);
+        return file_get_contents($url, false, $context);
+    }
+
+    public function postXml($url,$xml, $useCert = false, $second = 30){
+        $ch = curl_init();
+        //设置超时
+        curl_setopt($ch, CURLOPT_TIMEOUT, $second);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        //设置header
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        //要求结果为字符串且输出到屏幕上
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if($useCert == true) {
+            //设置证书
+            //使用证书：cert 与 key 分别属于两个.pem文件
+            curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
+            //curl_setopt($ch,CURLOPT_SSLCERT, WxPayConfig::SSLCERT_PATH);
+            curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
+            //curl_setopt($ch,CURLOPT_SSLKEY, WxPayConfig::SSLKEY_PATH);
+        }
+        //post提交方式
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+        //运行curl
+        $data = curl_exec($ch);
+        //返回结果
+        if($data) {
+            curl_close($ch);
+            return $data;
+        } else {
+            $error = curl_errno($ch);
+            curl_close($ch);
+            return false;
+        }
+    }
+
     /**
      * 将xml转为array
      * @param string $xml
@@ -241,9 +290,14 @@ class BaseService{
     public function curlPost($url = '', $postData = '', $options = array())
     {
         if (is_array($postData)) {
+            foreach($postData as $key => $value){
+                if($value==null){
+                    unset($postData[$key]);
+                }
+            }
             $postData = http_build_query($postData);
         }
-        $result=$this->httpPost($url,$postData);
+        $result=$this->postHttp($url,$postData);
         $resultArr = json_decode($result,true);
         if(empty($resultArr)){
             $data = iconv('GBK','UTF-8//IGNORE',$result);
@@ -308,5 +362,14 @@ class BaseService{
         $url=$this->payConfig['host'].$url;
         $result=$this->wechatPost($url,$unified);
         return $result;
+    }
+
+    public function wechatResultV2($url,$unified){
+        $url=$this->payConfig['host'].$url;
+        $unified['sign_type']='MD5';
+        $unified['sign'] = $this->getSign($unified,$this->payConfig['key']);
+        $xml=$this->arrayToXml($unified);
+        $result=$this->postXml($url,$xml);
+        return $this->xml_to_data($result);
     }
 }

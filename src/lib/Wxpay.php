@@ -64,6 +64,20 @@ class Wxpay extends payBase
         return $wxPay->refound();
     }
 
+    public function barCodePay($orderInfo){
+        $data=[
+            'out_trade_no'=>$orderInfo[0],
+            'total_amount'=>$orderInfo[1],
+            'body'=>$orderInfo[2],
+            'auth_code'=>$orderInfo[3],
+            'device_info'=>$orderInfo[4]??null,
+            'limit_pay'=>$orderInfo[5]??null,
+            'time_expire'=>$orderInfo[6]??600
+        ];
+        $wxPay = new wxpayService($data,$this->config);
+        return $wxPay->barCodePay();
+    }
+
     public function transfer($orderInfo){
         $data=[
             'openid'=>'',

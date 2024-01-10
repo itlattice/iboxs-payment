@@ -70,6 +70,8 @@ class Alipay extends payBase
             'subject'=>$orderInfo[3],           //订单标题
             'store_id'=>$orderInfo[4],          //商户门店编号
             'timeout_express'=>$orderInfo[5]??'2m',            //交易超时时间
+            'scene'=>$orderInfo[6]??'bar_code',
+            'query_options'=>$orderInfo[7]??null
         ];
         $aliPay=new alipayService($data,$this->config);
         return $aliPay->barCode();

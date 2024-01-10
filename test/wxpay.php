@@ -8,12 +8,13 @@ $wxpayconfig=require("config/wxpay.php");
 $orderInfo=array(
     'order_name'=>"订单测试",
     'amount'=>1,
-    'out_trade_no'=>"2021101247845"
+    'out_trade_no'=>"2021101247845559"
 );
 $wxpay=new Client('wechat',$wxpayconfig);
 //var_dump($wxpay->wechatCodePay($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name']));
 //var_dump($wxpay->wechatH5Pay($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name']));
-var_dump($wxpay->wechatRefund($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name'],'aaa'));
+// var_dump($wxpay->wechatRefund($orderInfo['out_trade_no'],$orderInfo['amount'],$orderInfo['order_name'],'aaa'));
+var_dump($wxpay->wechatBarCodePay($orderInfo['out_trade_no'],0.01,"测试","131861357886735243"));
 //Payment::Wechat()
 /**
  * 回调验证：

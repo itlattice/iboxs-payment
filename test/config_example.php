@@ -16,6 +16,7 @@ return [
         'mchid'=>'',  //商户号
         'appid'=>'',  //APPID（公众号支付、JS支付必须）
         'apiKey'=>'',  //APIV3秘钥
+        'key'=>'', //商户APIV2秘钥（付款码支付用）
         'notify_url'=>'',  //异步回调地址
         'return_url'=>'',  //同步回调地址（H5支付必须）
         'merchantPrivateKeyFilePath'=>'', //商户API私钥证书文件地址

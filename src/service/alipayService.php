@@ -13,7 +13,7 @@ class alipayService extends BaseService{
         $this->commonConfigs = array(
             //公共参数
             'app_id' => $this->payConfig['appid'],
-            'format' => 'JSON',
+            'format' => 'json',
             'return_url' => $this->payConfig['return_url'],
             'charset'=>$this->payConfig['charset'],
             'sign_type'=>$this->payConfig['sign_type'],
@@ -28,7 +28,7 @@ class alipayService extends BaseService{
         $requestConfigs=[
             'out_trade_no'=>$this->payInfo['out_trade_no'],
             'product_code'=>'FAST_INSTANT_TRADE_PAY',
-            'total_amount'=>$this->payInfo['total_amount'], //单位 元
+            'total_amount'=>round($this->payInfo['total_amount'],2), //单位 元
             'subject'=>$this->payInfo['subject'],  //订单标题
         ];
         $this->commonConfigs['method']='alipay.trade.page.pay';
@@ -94,18 +94,20 @@ class alipayService extends BaseService{
     public function barCode(){
         $requestConfigs = array(
             'out_trade_no'=>$this->payInfo['out_trade_no'],
-            'scene'=>'bar_code',                //条码支付固定传入bar_code
+            'scene'=>$this->payInfo['scene'],                //条码支付固定传入bar_code
             'auth_code'=>$this->payInfo['auth_code'],        //用户付款码，25~30开头的长度为16~24位的数字，实际字符串长度以开发者获取的付款码长度为准
             'total_amount'=>$this->payInfo['total_amount'],      //单位 元
             'subject'=>$this->payInfo['subject'],           //订单标题
             'store_id'=>$this->payInfo['store_id'],          //商户门店编号
             'timeout_express'=>$this->payInfo['timeout_express']??'2m',            //交易超时时间
+            'query_options'=>$this->payInfo['query_options']??null
         );
-        $this->commonConfigs['method']='alipay.trade.app.pay';
-        $this->commonConfigs['biz_content']=json_encode($requestConfigs);
+        $this->commonConfigs['method']='alipay.trade.pay';
+        $this->commonConfigs['biz_content']=json_encode($requestConfigs,256);
         $this->commonConfigs["sign"] = $this->generateSign($this->commonConfigs, $this->commonConfigs['sign_type']);
+        dump($this->commonConfigs);
         $result = $this->curlPost($this->payConfig['gatewayUrl'],$this->commonConfigs);
-        return $result;
+        return $result['alipay_trade_pay_response']??false;
     }
 
     public function transfer(){

@@ -2,9 +2,12 @@
 
 namespace iboxs\payment\service;
 
+use iboxs\payment\lib\Common;
+
 class wxpayService extends BaseService{
     protected $commonConfigs;
     protected $unified;
+    use Common;
 
     public function __construct($data, $config)
     {
@@ -95,6 +98,26 @@ class wxpayService extends BaseService{
         $unified2=Nullify($unified2);
         $unified=array_merge($this->unified,$unified2);
         $unifiedOrder=$this->wechatResult('/v3/pay/transactions/jsapi',$unified);
+        return $unifiedOrder;
+    }
+
+    public function barCodePay(){
+        $unified2=[
+            'device_info'=>$this->payInfo['device_info'],
+            'nonce_str'=>$this->GetRandStr(32),
+            'body'=>$this->payInfo['body'],
+            'out_trade_no'=>$this->payInfo['out_trade_no'],
+            'total_fee'=>round($this->payInfo['total_amount']*100),
+            'fee_type'=>'CNY',
+            'spbill_create_ip'=>'127.0.0.1',
+            'limit_pay'=>$this->payInfo['limit_pay']??null,
+            'time_expire'=>date('YmdHis',time()+$this->payInfo['time_expire']??600),
+            'auth_code'=>$this->payInfo['auth_code'],
+            'mch_id' => $this->payConfig['mchid'],
+            'appid'=>$this->payConfig['appid']
+        ];
+        $unified2=Nullify($unified2);
+        $unifiedOrder=$this->wechatResultV2('/pay/micropay',$unified2);
         return $unifiedOrder;
     }
 

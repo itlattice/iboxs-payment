@@ -20,7 +20,7 @@ class alipayNotifyService extends Base{
     }
 
     function verify($data, $sign, $signType = 'RSA') {
-        $pubKey= $this->alipayPublicKey;
+        $pubKey= $this->config['publicKey'];
         $res = "-----BEGIN PUBLIC KEY-----\n" .
             wordwrap($pubKey, 64, "\n", true) .
             "\n-----END PUBLIC KEY-----";
@@ -42,7 +42,7 @@ class alipayNotifyService extends Base{
         foreach ($params as $k => $v) {
             if (false === $this->checkEmpty($v) && "@" != substr($v, 0, 1)) {
                 // 转换成目标字符集
-                $v = $this->characet($v, $this->charset);
+                $v = $this->characet($v, $this->config['charset']);
                 if ($i == 0) {
                     $stringToBeSigned .= "$k" . "=" . "$v";
                 } else {
