@@ -26,6 +26,9 @@ trait WechatRequest
             $paramsStr=json_encode($params,JSON_UNESCAPED_UNICODE);
         }
         $signStr="{$method}\n{$pathinfo}\n{$time}\n{$str}\n{$paramsStr}\n";
+        if(!file_exists($this->payConfig['merchantPrivateKeyFilePath'])){
+            throw new \Exception('商户私钥文件不存在');
+        }
         $privateKey=file_get_contents($this->payConfig['merchantPrivateKeyFilePath']);
         $sign=$this->getSHA256SignWithRSA($signStr,$privateKey);
 

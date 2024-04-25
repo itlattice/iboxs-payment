@@ -2,7 +2,7 @@
 namespace iboxs\payment\lib;
 trait Common{
 
-    public function convertUnderline($str){
+    public static function convertUnderline($str){
         $str = str_replace("_", "", $str);
         $str = preg_replace_callback('/([A-Z]{1})/', function ($matches) {
             return '_' . strtolower($matches[0]);
