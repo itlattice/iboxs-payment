@@ -237,8 +237,14 @@ class BaseService{
         }
         //将XML转为array
         //禁止引用外部xml实体
-        libxml_disable_entity_loader(true);
-        $data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        if(PHP_VERSION_ID<80000){
+            libxml_disable_entity_loader(true);
+            $data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        } else{
+            $xmlObject = simplexml_load_string($xml,'SimpleXMLElement', LIBXML_NOCDATA);
+            $json = json_encode($xmlObject);
+            $data = json_decode($json, true);
+        }
         return $data;
     }
     /**
@@ -361,7 +367,7 @@ class BaseService{
     public function wechatResult($url,$unified){
         $url=$this->payConfig['host'].$url;
         $result=$this->wechatPost($url,$unified);
-        return $result;
+        return json_decode($result,true);
     }
 
     public function wechatResultV2($url,$unified){

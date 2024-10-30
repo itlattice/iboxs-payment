@@ -22,6 +22,11 @@ class Notify
         $config=self::getConfig($config,'alipay');
         $params=$_POST;
         $service=new alipayNotifyService($config);
+        if(isDebug()){
+            try{
+                $params['subject']=iconv('UTF-8','GBK',$params['subject']);
+            } catch(Exception $e){}
+        }
         $info=$service->check($params);
         if($info==false){
             return false;
@@ -32,9 +37,8 @@ class Notify
         if(!($params['trade_status']=='TRADE_SUCCESS'||$params['trade_status']=='TRADE_FINISHED')){
             return false;
         }
-        $subject=$params['subject'];
         try{
-            $subject=iconv('GBK//IGNORE','UTF-8',$params['subject']);
+            $params['subject']=iconv('GBK//IGNORE','UTF-8',$params['subject']);
         } catch(Exception $e){}
 
         $result=[
@@ -46,7 +50,7 @@ class Notify
             'receipt_amount'=>$params['receipt_amount']??0,  //商家在交易中实际收到的款项，单位为人民币
             'buyer_pay_amount'=>$params['buyer_pay_amount']??0,  //用户在交易中支付的金额
             'refund_fee'=>$params['refund_fee']??0,  //退款通知中，返回总退款金额
-            'subject'=>$subject,  //商品的标题/交易标题/订单标题/订单关键字等，是请求时对应的参数，在通知中原样传回。
+            'subject'=>$params['subject'],  //商品的标题/交易标题/订单标题/订单关键字等，是请求时对应的参数，在通知中原样传回。
             'body'=>$params['body']??'', //该笔订单的备注、描述、明细等。对应请求时的 body 参数，在通知中原样传回。
             'params'=>$params  //原文
         ];

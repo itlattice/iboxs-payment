@@ -31,6 +31,7 @@ use iboxs\payment\lib\Wxpay;
  * @method static array wechatBarCodePay($out_trade_no,$total_amount,$body,$auth_code,$device_info=null,$limit_pay=null,$time_expire=600) 微信条形码支付
  * @method static array wechatRefund(string $no,float $total_amount,string $reson,float $refund_amount,string $transaction_id,string $out_refund_no) 微信退款
  * @method static array wechatTransfer(string $no,string $name,string $desc,string $openid) 微信转账到微信零钱账户
+ * @method static array wechatOrderQuery(string $no) 微信支付查询订单状态
  * @method static string qqpayCodepay(string $no,float $amount,string $orderName) QQ钱包Native支付
  * @method static string qqpayRefund(string $trade_no,string $out_trade_no,float $refound_amount,string $subject,string $refound_order)  QQ钱包订单退款
  * @method static string qqpayJspay(string $no,float $amount,string $orderName) QQ钱包JS支付
@@ -38,6 +39,7 @@ use iboxs\payment\lib\Wxpay;
 class Payment
 {
     use Common;
+    protected $config;
 
     public static function setConfig($config=null,$paymode='alipay'){
         $obj=new self();

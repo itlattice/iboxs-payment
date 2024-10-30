@@ -37,6 +37,17 @@ class alipayService extends BaseService{
         return $this->buildRequestForm($this->commonConfigs);
     }
 
+    public function orderQuery(){
+        $requestConfigs = array(
+            'out_trade_no'=>$this->payInfo['out_trade_no'],
+            'query_options'=>$this->payInfo['query_options']
+        );
+        $this->commonConfigs['method']='alipay.trade.query';
+        $this->commonConfigs['biz_content']=json_encode($requestConfigs);
+        $this->commonConfigs["sign"] = $this->generateSign($this->commonConfigs, $this->commonConfigs['sign_type']);
+        return $this->curlPost($this->payConfig['gatewayUrl'],$this->commonConfigs);
+    }
+
     public function wapPay(){
         $requestConfigs = array(
             'out_trade_no'=>$this->payInfo['out_trade_no'],
@@ -102,10 +113,10 @@ class alipayService extends BaseService{
             'timeout_express'=>$this->payInfo['timeout_express']??'2m',            //交易超时时间
             'query_options'=>$this->payInfo['query_options']??null
         );
+        $requestConfigs=array_filter($requestConfigs);
         $this->commonConfigs['method']='alipay.trade.pay';
-        $this->commonConfigs['biz_content']=json_encode($requestConfigs,256);
+        $this->commonConfigs['biz_content']=json_encode($requestConfigs);
         $this->commonConfigs["sign"] = $this->generateSign($this->commonConfigs, $this->commonConfigs['sign_type']);
-        dump($this->commonConfigs);
         $result = $this->curlPost($this->payConfig['gatewayUrl'],$this->commonConfigs);
         return $result['alipay_trade_pay_response']??false;
     }

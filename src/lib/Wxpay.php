@@ -6,6 +6,9 @@ class Wxpay extends payBase
 {
     public function __construct($config)
     {
+        if($config==null){
+            $config=config('payment.wechat');
+        }
         parent::__construct($config);
     }
 
@@ -17,6 +20,14 @@ class Wxpay extends payBase
         ];
         $wxPay = new wxpayService($data,$this->config);
         return $wxPay->codePay();
+    }
+
+    public function orderQuery($orderInfo){
+        $data=[
+            'out_trade_no'=>$orderInfo[0]
+        ];
+        $wxPay = new wxpayService($data,$this->config);
+        return $wxPay->orderQuery();
     }
 
     public function h5pay($orderInfo){

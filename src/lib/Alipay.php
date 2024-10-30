@@ -7,6 +7,9 @@ class Alipay extends payBase
 {
     public function __construct($config)
     {
+        if($config==null){
+            $config=config('payment.alipay');
+        }
         parent::__construct($config);
     }
 
@@ -26,6 +29,17 @@ class Alipay extends payBase
         }
         echo $sHtml;
         exit();
+    }
+
+    public function orderQuery($orderInfo){
+        $data=[
+            'out_trade_no'=>$orderInfo[0],
+            'query_options'=>[
+                'trade_settle_info'
+            ]
+        ];
+        $aliPay = new alipayService($data,$this->config);
+        return $aliPay->orderQuery()['alipay_trade_query_response']??false;
     }
 
     public function codePay($orderInfo){

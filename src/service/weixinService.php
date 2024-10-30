@@ -13,7 +13,7 @@ class weixinService extends BaseService{
         $this->wechatConfig=[
             'mch_id' => $this->payConfig['mchid'],
             'appid' => $this->payConfig['appid'],
-            'apiKey' => $this->payConfig['apiKey'],
+            'apiKey' => $this->payConfig['apiKey']
         ];
     }
 

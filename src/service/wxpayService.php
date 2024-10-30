@@ -31,16 +31,16 @@ class wxpayService extends BaseService{
             'attach'=>$this->payInfo['attach']??null,
             'notify_url'=>$this->payConfig['notify_url'],
             'goods_tag'=>$this->payInfo['goods_tag']??null,
-            'support_fapiao'=>$this->payConfig['support_fapiao'],
+            'support_fapiao'=>$this->payConfig['support_fapiao']??false,
             'amount'=>[
                 'total'=>intval($this->payInfo['total_amount'] * 100),
-                'currency'=>$this->payConfig['currency']
+                'currency'=>$this->payConfig['currency']??'CNY'
             ],
             'detail'=>$this->payInfo['detail']??null,
             'scene_info'=>[
                 'payer_client_ip'=>'127.0.0.1'
             ],
-            'settle_info'=>$this->payConfig['settle_info'],
+            'settle_info'=>$this->payConfig['settle_info']??false,
         ];
         $unified2=Nullify($unified2);
         $unified=array_merge($this->unified,$unified2);
@@ -56,16 +56,16 @@ class wxpayService extends BaseService{
             'attach'=>$this->payInfo['attach']??null,
             'notify_url'=>$this->payConfig['notify_url'],
             'goods_tag'=>$this->payInfo['goods_tag']??null,
-            'support_fapiao'=>$this->payConfig['support_fapiao'],
+            'support_fapiao'=>$this->payConfig['support_fapiao']??false,
             'amount'=>[
                 'total'=>intval($this->payInfo['total_amount'] * 100),
-                'currency'=>$this->payConfig['currency']
+                'currency'=>$this->payConfig['currency']??'CNY'
             ],
             'detail'=>$this->payInfo['detail']??null,
             'scene_info'=>[
                 'payer_client_ip'=>'127.0.0.1'
             ],
-            'settle_info'=>$this->payConfig['settle_info'],
+            'settle_info'=>$this->payConfig['settle_info']??false,
         ];
         $unified2=Nullify($unified2);
         $unified=array_merge($this->unified,$unified2);
@@ -81,10 +81,10 @@ class wxpayService extends BaseService{
             'attach'=>$this->payInfo['attach']??null,
             'notify_url'=>$this->payConfig['notify_url'],
             'goods_tag'=>$this->payInfo['goods_tag']??null,
-            'support_fapiao'=>$this->payConfig['support_fapiao'],
+            'support_fapiao'=>$this->payConfig['support_fapiao']??false,
             'amount'=>[
                 'total'=>intval($this->payInfo['total_amount'] * 100),
-                'currency'=>$this->payConfig['currency']
+                'currency'=>$this->payConfig['currency']??'CNY'
             ],
             'payer'=>[
                 'openid'=>$this->payInfo['openid']
@@ -93,11 +93,23 @@ class wxpayService extends BaseService{
             'scene_info'=>[
                 'payer_client_ip'=>'127.0.0.1'
             ],
-            'settle_info'=>$this->payConfig['settle_info'],
+            'settle_info'=>$this->payConfig['settle_info']??false,
         ];
         $unified2=Nullify($unified2);
         $unified=array_merge($this->unified,$unified2);
         $unifiedOrder=$this->wechatResult('/v3/pay/transactions/jsapi',$unified);
+        return $unifiedOrder;
+    }
+
+    public function orderQuery(){
+        $unified2=[
+            'nonce_str'=>$this->GetRandStr(32),
+            'out_trade_no'=>$this->payInfo['out_trade_no'],
+            'mch_id' => $this->payConfig['mchid'],
+            'appid'=>$this->payConfig['appid']
+        ];
+        $unified2=Nullify($unified2);
+        $unifiedOrder=$this->wechatResultV2('/pay/orderquery',$unified2);
         return $unifiedOrder;
     }
 
@@ -107,7 +119,7 @@ class wxpayService extends BaseService{
             'nonce_str'=>$this->GetRandStr(32),
             'body'=>$this->payInfo['body'],
             'out_trade_no'=>$this->payInfo['out_trade_no'],
-            'total_fee'=>round($this->payInfo['total_amount']*100),
+            'total_fee'=>intval($this->payInfo['total_amount']*100),
             'fee_type'=>'CNY',
             'spbill_create_ip'=>'127.0.0.1',
             'limit_pay'=>$this->payInfo['limit_pay']??null,
@@ -129,16 +141,16 @@ class wxpayService extends BaseService{
             'attach'=>$this->payInfo['attach']??null,
             'notify_url'=>$this->payConfig['notify_url'],
             'goods_tag'=>$this->payInfo['goods_tag']??null,
-            'support_fapiao'=>$this->payConfig['support_fapiao'],
+            'support_fapiao'=>$this->payConfig['support_fapiao']??false,
             'amount'=>[
                 'total'=>intval($this->payInfo['total_amount'] * 100),
-                'currency'=>$this->payConfig['currency']
+                'currency'=>$this->payConfig['currency']??'CNY'
             ],
             'detail'=>$this->payInfo['detail']??null,
             'scene_info'=>[
                 'payer_client_ip'=>'127.0.0.1'
             ],
-            'settle_info'=>$this->payConfig['settle_info'],
+            'settle_info'=>$this->payConfig['settle_info']??false,
         ];
         $unified2=Nullify($unified2);
         $unified=array_merge($this->unified,$unified2);
@@ -156,7 +168,7 @@ class wxpayService extends BaseService{
             'amount'=>[
                 'refund'=>$this->payInfo['amount'],
                 'total'=>$this->payInfo['total_amount'],
-                'currency'=>$this->payConfig['currency']
+                'currency'=>$this->payConfig['currency']??'CNY'
             ],
             'goods_detail'=>$this->payInfo['goods_detail']??null
         );
