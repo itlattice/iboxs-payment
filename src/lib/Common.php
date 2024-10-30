@@ -1,7 +1,16 @@
 <?php
-namespace iboxs\payment\extend;
-class Common{
-    public static function is_mobile_request() { 
+namespace iboxs\payment\lib;
+trait Common{
+
+    public static function convertUnderline($str){
+        $str = str_replace("_", "", $str);
+        $str = preg_replace_callback('/([A-Z]{1})/', function ($matches) {
+            return '_' . strtolower($matches[0]);
+        }, $str);
+        return ltrim($str, "_");
+    }
+
+    public function is_mobile_request() { 
         $_SERVER['ALL_HTTP'] = isset($_SERVER['ALL_HTTP']) ? $_SERVER['ALL_HTTP'] : ''; 
         $mobile_browser = '0'; 
         if(preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|iphone|ipad|ipod|android|xoom)/i', strtolower($_SERVER['HTTP_USER_AGENT']))) 
@@ -39,28 +48,52 @@ class Common{
     }
 
     /**
-    * 产生一个指定长度的随机字符串,并返回给用户
-    * @param type $len 产生字符串的长度
-    * @return string 随机字符串
-    */
-    public static function genRandomString($len = 32)
-    {
-        $chars = array(
-        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
-        "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
-        "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G",
-        "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-        "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2",
-        "3", "4", "5", "6", "7", "8", "9"
-        );
-        $charsLen = count($chars) - 1;
-        // 将数组打乱
-        shuffle($chars);
-        $output = "";
-        for ($i = 0; $i < $len; $i++)
-        {
-            $output .= $chars[mt_rand(0, $charsLen)];
+     * 校验$value是否非空
+     *  if not set ,return true;
+     *    if is null , return true;
+     **/
+    protected function checkEmpty($value) {
+        if (!isset($value))
+            return true;
+        if ($value === null)
+            return true;
+        if (trim($value) === "")
+            return true;
+        return false;
+    }
+
+    /**
+     * 转换字符集编码
+     * @param $data
+     * @param $targetCharset
+     * @return string
+     */
+    public function characet($data, $targetCharset) {
+        if (!empty($data)) {
+            $fileType = $this->config['charset'];
+            if (strcasecmp($fileType, $targetCharset) != 0) {
+                $data = mb_convert_encoding($data, $targetCharset, $fileType);
+                //$data = iconv($fileType, $targetCharset.'//IGNORE', $data);
+            }
         }
-        return $output;
+        return $data;
+    }
+
+    /**
+     * 获取随机字符串
+     * @param int $length 随机字符串长度
+     * @return string
+     */
+    public function GetRandStr(int $length = 32): string
+    {
+        //字符组合
+        $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $len = strlen($str) - 1;
+        $randStr = '';
+        for ($i = 0; $i < $length; $i++) {
+            $num = mt_rand(0, $len);
+            $randStr .= $str[$num];
+        }
+        return $randStr;
     }
 }
