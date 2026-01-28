@@ -16,20 +16,11 @@ return [
         'mchid'=>'',  //商户号
         'appid'=>'',  //APPID（公众号支付、JS支付必须）
         'apiKey'=>'',  //APIV3秘钥
+        'key'=>'', //商户APIV2秘钥（付款码支付用）
         'notify_url'=>'',  //异步回调地址
         'return_url'=>'',  //同步回调地址（H5支付必须）
         'merchantPrivateKeyFilePath'=>'', //商户API私钥证书文件地址
         'merchantCertificateSerial'=>'', //「商户API证书」的「证书序列号」
-    ],
-    'qqpay'=>[
-        'mchid'=>'',  //商户号
-        'appid'=>'',  //APPID（公众号支付、JS支付必须）
-        'apiKey'=>'',  //商户Key
-        'notify_url'=>'',  //异步回调地址
-        'return_url'=>'',  //同步回调地址
-        'password'=>'', // 操作员密码
-        'user_id'=>'' // 操作员账号
-
     ]
 ];
 ?>

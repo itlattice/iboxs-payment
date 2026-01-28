@@ -5,46 +5,95 @@
  */
 namespace iboxs\payment;
 
-use iboxs\payment\lib\Base;
+use iboxs\payment\lib\Common;
+use iboxs\payment\pay\alipay\{AlipayWebPay};
+use iboxs\payment\pay\Alipay;
 
+/**
+ * @see \iboxs\payment\lib\Base
+ * @package iboxs\payment
+ * @mixin \iboxs\payment\lib\Base
+ * @version 2.0
+ * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491
+ * @license MIT
+ * @method static AlipayWebPay alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY') 支付宝网页支付（含手机端和PC端）
+ */
 class Payment
 {
-    /**
-     * 实例化数据
-     * @param string $paymode 支付方式（alipay:支付宝;wxpay:微信支付）
-     * @param array $config 支付配置信息（一般框架内建议在config/payment.php内配置，若为活动配置，请传入，支付宝就传入支付宝的，微信就传入微信的）
-     */
-    private static function Client($paymode='alipay',$config=[]){
-        return (new Client($paymode,$config));
+    use Common;
+    protected $config;
+
+    public static function setConfig($config=null,$paymode='alipay'){
+        $obj=new self();
+        $obj->config=$config;
+        if($obj->config==null||$obj->config==[]){
+            if(!function_exists('config')){
+                throw (new \Exception('无配置数据'));
+            }
+            $config=config('payment.'.$paymode);
+        }
+        return $obj;
     }
 
-    /**
-     * 发起支付宝支付
-     * @param array $config 支付宝配置信息（一般框架内建议在config/payment.php内配置，若已配置，则无需传入，若为活动配置，请传入）
-     * @return Client
-     */
-    public static function Alipay($config=[])
+    public static function __callStatic($name, $arguments)
     {
-        return self::Client('alipay',$config);
+        $name=self::convertUnderline($name);
+        $arr=explode('_',$name);
+        if(count($arr)<2){
+            throw (new \Exception('方法不存在'));
+            return;
+        }
+        $fun='';
+        for($i=1;$i<count($arr);$i++){
+            $fun.=strtoupper(substr($arr[$i],0,1)).substr($arr[$i],1,strlen($arr[$i])-1);
+        }
+        $obj=self::setConfig(null,$arr[0]);
+        $fun=strtolower(substr($fun,0,1)).substr($fun,1,strlen($fun)-1);
+        switch($arr[0]){
+            case 'alipay':
+                return (new Alipay($obj->config))->$fun($arguments);
+                break;
+            case 'wechat':
+                return (new Wxpay($obj->config))->$fun($arguments);
+                break;
+            default:
+                throw (new \Exception('不支持的支付方式'));
+        }
     }
 
-    /**
-     * 发起微信支付
-     * @param array $config 微信支付配置信息（一般框架内建议在config/payment.php内配置，若已配置，则无需传入，若为活动配置，请传入）
-     * @return Client
-     */
-    public static function Wechat($config=[])
+    public function __call($name, $arguments)
     {
-        return self::Client("wechat",$config);
+        $name=self::convertUnderline($name);
+        $arr=explode('_',$name);
+        if(count($arr)<2){
+            throw (new \Exception('方法不存在'));
+            return;
+        }
+        $fun='';
+        for($i=1;$i<count($arr);$i++){
+            $fun.=strtoupper(substr($arr[$i],0,1)).substr($arr[$i],1,strlen($arr[$i])-1);
+        }
+        $fun=strtolower(substr($fun,0,1)).substr($fun,1,strlen($fun)-1);
+        switch($arr[0]){
+            case 'alipay':
+                return (new Alipay($this->config))->$fun($arguments);
+                break;
+            case 'wechat':
+                return (new Wxpay($this->config))->$fun($arguments);
+                break;
+            default:
+                throw (new \Exception('不支持的支付方式'));
+        }
     }
 
-    /**
-     * 发起QQ钱包支付
-     * @param $config
-     * @return Client
-     */
-    public static function QQPay($config=[])
-    {
-        return self::Client("qqpay",$config);
+    public static function install(){
+        if(class_exists('think\\App')||class_exists('Illuminate\\Http\\Request')||class_exists('iboxs\\App')){
+            $path=root_path('config')."/payment.php";
+            $text=__DIR__."/../test/config_example.php";
+            if(file_exists($text)){
+                $text=file_get_contents($text);
+            }
+            file_put_contents($path,$text);
+        }
     }
 }

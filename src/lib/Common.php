@@ -1,7 +1,8 @@
 <?php
 namespace iboxs\payment\lib;
 trait Common{
-    public function convertUnderline($str){
+
+    public static function convertUnderline($str){
         $str = str_replace("_", "", $str);
         $str = preg_replace_callback('/([A-Z]{1})/', function ($matches) {
             return '_' . strtolower($matches[0]);
@@ -67,9 +68,9 @@ trait Common{
      * @param $targetCharset
      * @return string
      */
-    function characet($data, $targetCharset) {
+    public function characet($data, $targetCharset) {
         if (!empty($data)) {
-            $fileType = $this->charset;
+            $fileType = $this->config['charset'];
             if (strcasecmp($fileType, $targetCharset) != 0) {
                 $data = mb_convert_encoding($data, $targetCharset, $fileType);
                 //$data = iconv($fileType, $targetCharset.'//IGNORE', $data);

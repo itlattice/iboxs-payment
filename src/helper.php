@@ -1,20 +1,4 @@
 <?php
-if(!function_exists('dd')){
-    /**
-     * 断点输出
-     * @param $data
-     * @return void
-     */
-    function dd(...$data){
-        echo '<pre>';
-        foreach ($data as $d){
-            print_r($d);
-        }
-        echo '</pre>';
-        exit;
-    }
-}
-
 if(!function_exists('wechatExpireTime')){
     function wechatExpireTime($time){
         if($time==null){
@@ -44,6 +28,19 @@ if(!function_exists('Nullify')){
             $result[$key]=$item;
         }
         return $result;
+    }
+}
+
+if(!function_exists('GetRandStr')){
+    function GetRandStr($len=32){
+        $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $len = strlen($str) - 1;
+        $randStr = '';
+        for ($i = 0; $i < $len; $i++) {
+            $num = mt_rand(0, $len);
+            $randStr .= $str[$num];
+        }
+        return $randStr;
     }
 }
 ?>

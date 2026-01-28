@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=8.0",
         "ext-openssl": "*",
         "ext-curl": "*",
         "ext-json": "*"
