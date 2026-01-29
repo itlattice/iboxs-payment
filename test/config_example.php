@@ -1,4 +1,4 @@
-<?
+<?php
 return [
     'alipay'=>[
         'publicKey' =>"", //支付宝公钥

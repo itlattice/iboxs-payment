@@ -6,7 +6,6 @@
 namespace iboxs\payment;
 
 use iboxs\payment\lib\Common;
-use iboxs\payment\pay\alipay\{AlipayWebPay};
 use iboxs\payment\pay\Alipay;
 
 /**
@@ -16,7 +15,8 @@ use iboxs\payment\pay\Alipay;
  * @version 2.0
  * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491
  * @license MIT
- * @method static AlipayWebPay alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY') 支付宝网页支付（含手机端和PC端）
+ * @method static Alipay alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY') 支付宝网页支付（含手机端和PC端）
+ * @method static Alipay alipayTradePay(string $out_trade_no,float $total_amount,string $subject,string $auth_code,string $scene='bar_code') 支付宝当面付支付(付款码扫码支付)
  */
 class Payment
 {
@@ -51,14 +51,17 @@ class Payment
         $fun=strtolower(substr($fun,0,1)).substr($fun,1,strlen($fun)-1);
         switch($arr[0]){
             case 'alipay':
-                return (new Alipay($obj->config))->$fun($arguments);
+                $result=(new Alipay($obj->config));
                 break;
             case 'wechat':
-                return (new Wxpay($obj->config))->$fun($arguments);
+                $result=(new Wxpay($obj->config));
                 break;
             default:
                 throw (new \Exception('不支持的支付方式'));
         }
+        $result->payType=$fun;
+        $result->arguments=$arguments;
+        return $result;
     }
 
     public function __call($name, $arguments)
@@ -76,14 +79,17 @@ class Payment
         $fun=strtolower(substr($fun,0,1)).substr($fun,1,strlen($fun)-1);
         switch($arr[0]){
             case 'alipay':
-                return (new Alipay($this->config))->$fun($arguments);
+                $result=(new Alipay($this->config));
                 break;
             case 'wechat':
-                return (new Wxpay($this->config))->$fun($arguments);
+                $result=(new Wxpay($this->config));
                 break;
             default:
                 throw (new \Exception('不支持的支付方式'));
         }
+        $result->payType=$fun;
+        $result->arguments=$arguments;
+        return $result;
     }
 
     public static function install(){

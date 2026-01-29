@@ -43,4 +43,12 @@ if(!function_exists('GetRandStr')){
         return $randStr;
     }
 }
+if(!function_exists('debug')){
+    function debug(...$value){
+        foreach ($value as $item) {
+            var_dump($item);
+        }
+        exit;
+    }
+}
 ?>

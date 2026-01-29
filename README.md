@@ -37,32 +37,11 @@ return [
 请注意填写好内容，后续请求这里将作为全局配置使用。
 `若需要动态配置，可调用iboxs\payment\Payment::setConfig($config)配置进行载入，$config与上方配置文件内容一致。`
 
-### 支付宝
-##### 网页支付（包括手机网页支付和电脑网页支付）
-* 文档地址
-https://open.alipay.com/api/detail?code=I1080300001000041203&index=1
-
-* 获取基本支付对象
-```
-/**
- * @param string $out_trade_no 商户订单号。
- * @param float $total_amount 订单金额（单位:元）
- * @param string $subject 订单标题
- * @param string $product_code 订单类型，默认为FAST_INSTANT_TRADE_PAY
- * @return PaymentResult|false 调用结果对象
- */
-use iboxs\payment\Payment;
-
-$payment=Payment::alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY')
-                                ->addOptions([  //设置其他参数（如果需要在该接口下传入其他参数，可在这里设置，若无，可不调用本函数），参数请参考具体的接口文档
-                                    'time_expire'=>'2026-12-31 10:05:01'
-                                ])
-                                ->run();  //启动支付
-if($payment==false){
-    $failReason=$payment->getError();  //获取失败原因
-    throw new \Exception($failReason);
+* 具体的调用方法和示例程序，请查阅test文件夹下的具体demo。
+* 注意：若在laravel/thinkphp框架下使用，则无需调用setConfig方法，可直接调用具体的接口，若在其他框架下使用的，也不想调用setConfig方法时，可将下列函数放入公共函数文件内即可：
+```php
+// 这里只做示例，请根据实际情况调整
+function config(string $key){
+    return require("./config/config.php");  //修改为你的配置文件路径
 }
-$body=$payment->getBody();  //获取响应原文
-echo $body;  //输出到网页上，网页支付浏览器会自动跳转的
-exit();
 ```
