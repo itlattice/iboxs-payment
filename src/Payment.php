@@ -6,7 +6,7 @@
 namespace iboxs\payment;
 
 use iboxs\payment\lib\Common;
-use iboxs\payment\pay\Alipay;
+use iboxs\payment\pay\{Alipay,Wechat};
 
 /**
  * @see \iboxs\payment\lib\Base
@@ -23,14 +23,14 @@ class Payment
     use Common;
     protected $config;
 
-    public static function setConfig($config=null,$paymode='alipay'){
+    public static function setConfig($config=null){
         $obj=new self();
         $obj->config=$config;
         if($obj->config==null||$obj->config==[]){
             if(!function_exists('config')){
                 throw (new \Exception('无配置数据'));
             }
-            $config=config('payment.'.$paymode);
+            $config=config('payment');
         }
         return $obj;
     }
@@ -54,7 +54,7 @@ class Payment
                 $result=(new Alipay($obj->config));
                 break;
             case 'wechat':
-                $result=(new Wxpay($obj->config));
+                $result=(new Wechat($obj->config));
                 break;
             default:
                 throw (new \Exception('不支持的支付方式'));
@@ -82,7 +82,7 @@ class Payment
                 $result=(new Alipay($this->config));
                 break;
             case 'wechat':
-                $result=(new Wxpay($this->config));
+                $result=(new Wechat($this->config));
                 break;
             default:
                 throw (new \Exception('不支持的支付方式'));

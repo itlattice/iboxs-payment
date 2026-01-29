@@ -6,10 +6,7 @@
 namespace iboxs\payment;
 
 use Exception;
-use iboxs\payment\lib\Base;
-use iboxs\payment\service\alipayNotifyService;
-use iboxs\payment\service\wechatNotifyService;
-use iboxs\payment\service\alipayService;
+use iboxs\payment\pay\alipay\Notify as AlipayNotify;
 
 class Notify
 {
@@ -22,12 +19,7 @@ class Notify
         $config=self::getConfig($config,'alipay');
         $params=$_POST;
         // $params=request()->param();
-        $service=new alipayNotifyService($config);
-        if(isDebug()){
-            try{
-                $params['subject']=iconv('UTF-8','GBK',$params['subject']);
-            } catch(Exception $e){}
-        }
+        $service=new AlipayNotify($config);
         $info=$service->check($params);
         if($info==false){
             return false;
@@ -56,54 +48,6 @@ class Notify
             'params'=>$params  //原文
         ];
         return $result;
-    }
-
-    /**
-     * 微信支付验签
-     * @param $config
-     * @return false|mixed
-     */
-    public static function Wechat($config=[]){
-        $config=self::getConfig($config,'wexin');
-        header("Content-type: text/xml");
-        $notify=new wechatNotifyService($config['mchid'],$config['appid'],$config['apiKey']);
-        $result=$notify->Check();
-        $notifiedData = file_get_contents('php://input');
-        //XML格式转换
-        $xmlObj = simplexml_load_string($notifiedData, 'SimpleXMLElement', LIBXML_NOCDATA);
-        $xmlObj = json_decode(json_encode($xmlObj), true);
-        //支付成功
-        if ($xmlObj['return_code'] == "SUCCESS" && $xmlObj['result_code'] == "SUCCESS") {
-            if($result==true){
-                echo sprintf("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
-                return $xmlObj;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * QQ支付验签
-     * @param $config
-     * @return false|mixed
-     */
-    public static function QQPay($config=[]){
-        $config=self::getConfig($config,'qqpay');
-        header("Content-type: text/xml");
-        $notify=new wechatNotifyService($config['mchid'],$config['appid'],$config['apiKey']);
-        $result=$notify->Check();
-        $notifiedData = file_get_contents('php://input');
-        //XML格式转换
-        $xmlObj = simplexml_load_string($notifiedData, 'SimpleXMLElement', LIBXML_NOCDATA);
-        $xmlObj = json_decode(json_encode($xmlObj), true);
-        //支付成功
-        if ($xmlObj['return_code'] == "SUCCESS" && $xmlObj['result_code'] == "SUCCESS") {
-            if($result==true){
-                echo sprintf("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
-                return $xmlObj;
-            }
-        }
-        return false;
     }
 
     private static function getConfig($config,$paymode){
