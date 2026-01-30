@@ -25,6 +25,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Alipay alipayTradeClose(string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易关闭接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
  * @method static Alipay alipayAppPay(string $out_trade_no,float $total_amount,string $subject) 支付宝APP支付
  * @method static Alipay alipayBillDownload(string $bill_type,string $bill_date) 支付宝查询对账单下载地址
+ * @method static Alipay alipayTradeJSPay(string $out_trade_no,float $total_amount,string $subject,string $op_app_id,string $buyer_id=null,string $buyer_open_idstring=null) 支付宝JS支付统一收单交易创建接口(支付宝小程序使用)
  */
 class Payment
 {
