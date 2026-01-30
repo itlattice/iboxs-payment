@@ -17,6 +17,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @license MIT
  * @method static Alipay alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY') 支付宝网页支付（含手机端和PC端）
  * @method static Alipay alipayTradePay(string $out_trade_no,float $total_amount,string $subject,string $auth_code,string $scene='bar_code') 支付宝当面付支付(付款码扫码支付)
+ * @method static Alipay alipayTradeQuery(string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易查询接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
  */
 class Payment
 {

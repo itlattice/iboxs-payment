@@ -8,7 +8,7 @@ return [
         'return_url' => "",  //同步回调地址
         'charset' => "UTF-8",  //编码方式
         'sign_type'=>"RSA2",  //加密方式（本组件使用RSA2进行加密和回调验签）
-        'gatewayUrl' =>"https://openapi.alipay.com/gateway.do",  //支付宝接口地址（若为沙箱环境的记得改为https://openapi.alipaydev.com/gateway.do）
+        'gatewayUrl' =>"https://openapi.alipay.com/gateway.do",  //支付宝接口地址（若为沙箱环境的记得改为https://openapi-sandbox.dl.alipaydev.com/gateway.do，沙箱地址不一定，请到你的支付宝应用调试页面获得）
         'has_mobile'=>false //是否已开通手机H5网页支付，若已开通，若用户为手机访问且调用网页支付接口时，会默认跳转手机端支付接口
     ],
     'weixin'=>[

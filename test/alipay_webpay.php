@@ -1,15 +1,16 @@
 <?php
 /**
  * 这里是支付宝网页支付的demo
+ * 文档地址：https://opendocs.alipay.com/open/59da99d0_alipay.trade.page.pay
  */
 require_once "../vendor/autoload.php";
 use iboxs\payment\Payment;
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     var_dump('错误',$errfile,$errline,$errstr);
 });
-$no="2021101247845559";
-$amount=1;
-$subject="订单测试";
+$no="2021101247845559";   //商户订单号
+$amount=1;   //订单金额，单位元
+$subject="订单测试";  //订单标题
 try{
     $config=require("./config/config.php");  //可将config_example.php复制为config.php，填入自己的参数，并在这里引入
     $html= Payment::setConfig($config);//laravel/thinkphp框架下按文档说明把配置文件放入config文件夹下后，无需调用本函数，可直接使用Payment::alipayTradePay()

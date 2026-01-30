@@ -15,6 +15,6 @@ class TradePay extends BaseAlipayPay{
         );
         $publicData=$this->getRequestPublicData('alipay.trade.pay',$requestData);
         $result = $this->curlPost($this->config['gatewayUrl'],$publicData);
-        return new PaymentResult(json_encode($result['alipay_trade_pay_response'],JSON_UNESCAPED_UNICODE),$this->payRequestConfigs);
+        return new PaymentResult(json_encode($result['alipay_trade_pay_response'],JSON_UNESCAPED_UNICODE),$publicData);
     }
 }
