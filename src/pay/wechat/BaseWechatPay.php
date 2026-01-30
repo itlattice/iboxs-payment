@@ -36,7 +36,7 @@ class BaseWechatPay extends BasePay{
     }
 
     protected function wechatV3Get(string $urlPath,array $data=[]):string|false{
-        $url=$this->config['host'].$urlPath;
+        $url=$this->config['host'].$urlPath."?". http_build_query($data);
         $header=[
             'Authorization: '.$this->getAuthorization($url,$data,'GET'),
             'Accept: application/json',
@@ -55,6 +55,8 @@ class BaseWechatPay extends BasePay{
         $paramsStr='';
         if($method=='POST'||$method=='PUT'){
             $paramsStr=json_encode($params,256|64);
+        } else{
+            $paramsStr='';
         }
         $signStr="{$method}\n{$pathinfo}\n{$time}\n{$str}\n{$paramsStr}\n";
         if(!file_exists($this->config['merchantPrivateKeyFilePath'])){
@@ -70,7 +72,8 @@ class BaseWechatPay extends BasePay{
     }
 
     private function getSHA256SignWithRSA($signContent, $privateKey){
-        // $signContent=file_get_contents('D:/sign.txt');
+        $signContent = str_replace("\r\n", "\n", $signContent);
+        $signContent = str_replace("\r", "", $signContent);
         $key = openssl_get_privatekey($privateKey);
         if(!$key) {
             throw new \Exception('获取私钥失败，请检查私钥格式是否正确');
