@@ -15,6 +15,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @version 2.0
  * @author ITLattice https://github.com/itlattice https://gitee.com/gz8 联系QQ：320587491
  * @license MIT
+ * 这里开始是支付宝接口
  * @method static Alipay alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY') 支付宝网页支付（含手机端和PC端）
  * @method static Alipay alipayTradePay(string $out_trade_no,float $total_amount,string $subject,string $auth_code,string $scene='bar_code') 支付宝当面付支付(付款码扫码支付)
  * @method static Alipay alipayTradeQuery(string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易查询接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
@@ -26,6 +27,10 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Alipay alipayAppPay(string $out_trade_no,float $total_amount,string $subject) 支付宝APP支付
  * @method static Alipay alipayBillDownload(string $bill_type,string $bill_date) 支付宝查询对账单下载地址
  * @method static Alipay alipayTradeJSPay(string $out_trade_no,float $total_amount,string $subject,string $op_app_id,string $buyer_id=null,string $buyer_open_idstring=null) 支付宝JS支付统一收单交易创建接口(支付宝小程序使用)
+ * 
+ * 这里开始是微信支付接口
+ * @method static Wechat wechatJspay(string $out_trade_no,float $amount,string $description,string $openid) 微信支付JSAPI支付
+ * @method static Wechat wechatTransQuery(string $transaction_id) 微信支付订单号查询订单
  */
 class Payment
 {
