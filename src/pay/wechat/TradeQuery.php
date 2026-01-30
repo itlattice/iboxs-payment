@@ -3,7 +3,7 @@ namespace iboxs\payment\pay\wechat;
 
 use iboxs\payment\pay\PaymentResult;
 
-class TransQuery extends BaseWechatPay{
+class TradeQuery extends BaseWechatPay{
     /**
      * 运行
      */

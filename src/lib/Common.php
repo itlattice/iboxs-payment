@@ -116,10 +116,6 @@ trait Common{
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        //把响应头输出
-            curl_setopt($curl, CURLINFO_HEADER_OUT, true);
-            curl_setopt($curl, CURLOPT_HEADER, true);
-
         $output = curl_exec($curl);
         curl_close($curl);
         debug($output);

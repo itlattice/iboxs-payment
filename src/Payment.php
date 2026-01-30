@@ -30,7 +30,10 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * 
  * 这里开始是微信支付接口
  * @method static Wechat wechatJspay(string $out_trade_no,float $amount,string $description,string $openid) 微信支付JSAPI支付
- * @method static Wechat wechatTransQuery(string $transaction_id) 微信支付订单号查询订单
+ * @method static Wechat wechatTradeQuery(string $transaction_id) 微信支付订单号查询订单
+ * @method static Wechat wechatOutTradeQuery(string $out_trade_no) 微信支付商户订单号查询订单
+ * @method static Wechat wechatCloseTrade(string $out_trade_no) 微信支付关闭订单
+ * @method static Wechat wechatRefund(string $out_refund_no,float $amount,float $total,string $transaction_id=null,string $out_trade_no=null) 微信支付退款申请
  */
 class Payment
 {
