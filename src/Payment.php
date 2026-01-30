@@ -18,6 +18,13 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Alipay alipayWebPay(string $out_trade_no,float $total_amount,string $subject,string $product_code='FAST_INSTANT_TRADE_PAY') 支付宝网页支付（含手机端和PC端）
  * @method static Alipay alipayTradePay(string $out_trade_no,float $total_amount,string $subject,string $auth_code,string $scene='bar_code') 支付宝当面付支付(付款码扫码支付)
  * @method static Alipay alipayTradeQuery(string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易查询接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
+ * @method static Alipay alipayTradeRefund(float $refund_amount,string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易退款接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
+ * @method static Alipay alipayRefundQuery(string $out_request_no,string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易退款查询接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
+ * @method static Alipay alipayTradeCancel(string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易撤销接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
+ * @method static Alipay alipayTradePrecreate(string $out_trade_no,float $total_amount,string $subject,string $product_code='QR_CODE_OFFLINE') 支付宝统一收单线下交易预创建(生成二维码)
+ * @method static Alipay alipayTradeClose(string $out_trade_no=null,string $trade_no=null) 支付宝统一收单交易关闭接口($trade_no和$out_trade_no二选一，不能同时为空，若两个都传入的，取$trade_no)
+ * @method static Alipay alipayAppPay(string $out_trade_no,float $total_amount,string $subject) 支付宝APP支付
+ * @method static Alipay alipayBillDownload(string $bill_type,string $bill_date) 支付宝查询对账单下载地址
  */
 class Payment
 {

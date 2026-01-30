@@ -66,7 +66,7 @@ class BaseAlipayPay extends BasePay{
         return $stringToBeSigned;
     }
 
-    protected function curlPost($url = '', $postData = '', $options = array())
+    protected function curlPost($url = '', $postData = '', $format='json')
     {
         if (is_array($postData)) {
             foreach($postData as $key => $value){
@@ -77,12 +77,26 @@ class BaseAlipayPay extends BasePay{
             $postData = http_build_query($postData);
         }
         $result=$this->postHttp($url,$postData);
+        if($format=='json'){
+            return $this->formatJsonResult($result);
+        } else if($format=='xml'){
+            return $this->formatXmlResult($result);
+        } else{
+            return $result;
+        }
+    }
+
+    private function formatJsonResult($result){
         $resultArr = json_decode($result,true);
         if(empty($resultArr)){
             $data =  iconv('GBK','UTF-8//IGNORE',$result);
             return json_decode($data,true);
         }
         return json_decode($result,true);
+    }
+
+    private function formatXmlResult($result){
+        
     }
 
     private function postHttp($url,$params){
