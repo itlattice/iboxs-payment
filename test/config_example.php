@@ -15,7 +15,7 @@ return [
         'host'=>'https://api.mch.weixin.qq.com',  //接入点（若出现异常可访问容灾接入点：https://api2.mch.weixin.qq.com）
         'mchid'=>'',  //商户号
         'appid'=>[  //需要先与商户号进行绑定（）
-            'default'=>'', //默认使用的APPID(例如Native支付、H5支付时会用到，以下三种APPID任选一个填在这里即可)
+            'default'=>'', //默认使用的APPID(例如Native支付、H5支付、商家转账时会用到，以下三种APPID任选一个填在这里即可，注意部分接口需要openid的，需要填写一个与openid对应的appid，请根据情况选择)
             'app'=> '', //【APP支付用，无就不设置即可】应用APPID(商户在微信开放平台(移动应用)
             'mp'=>'', //【公众号支付用，调用JS支付接口】公众号APPID
             'mini'=>'', //【小程序支付用，调用小程序支付接口】小程序APPID
