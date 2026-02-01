@@ -38,6 +38,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Wechat wechatAppPay(string $out_trade_no,float $amount,string $description) 微信支付APP支付
  * @method static Wechat wechatH5Pay(string $out_trade_no,float $amount,string $description,array $scene_info) 微信支付H5支付
  * @method static Wechat wechatNativePay(string $out_trade_no,float $amount,string $description) 微信支付Native支付(扫码支付)
+ * @method static Wechat wechatBarcodePay(string $out_trade_no,float $amount,string $description,string $auth_code,string $clientIP='127.0.0.1') 微信支付付款码支付(V2)
  */
 class Payment
 {
