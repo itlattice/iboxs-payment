@@ -29,7 +29,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Alipay alipayTradeJSPay(string $out_trade_no,float $total_amount,string $subject,string $op_app_id,string $buyer_id=null,string $buyer_open_idstring=null) 支付宝JS支付统一收单交易创建接口(支付宝小程序使用)
  * 
  * 这里开始是微信支付接口
- * @method static Wechat wechatJspay(string $out_trade_no,float $amount,string $description,string $openid) 微信支付JSAPI支付
+ * @method static Wechat wechatJspay(string $scene,string $out_trade_no,float $amount,string $description,string $openid) 微信支付JSAPI支付
  * @method static Wechat wechatTradeQuery(string $transaction_id) 微信支付订单号查询订单
  * @method static Wechat wechatOutTradeQuery(string $out_trade_no) 微信支付商户订单号查询订单
  * @method static Wechat wechatCloseTrade(string $out_trade_no) 微信支付关闭订单
@@ -37,6 +37,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Wechat wechatRefundQuery(string $out_refund_no) 微信支付查询单笔退款（通过商户退款单号）
  * @method static Wechat wechatAppPay(string $out_trade_no,float $amount,string $description) 微信支付APP支付
  * @method static Wechat wechatH5Pay(string $out_trade_no,float $amount,string $description,array $scene_info) 微信支付H5支付
+ * @method static Wechat wechatNativePay(string $out_trade_no,float $amount,string $description) 微信支付Native支付(扫码支付)
  */
 class Payment
 {

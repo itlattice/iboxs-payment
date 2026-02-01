@@ -7,9 +7,9 @@ class Jspay extends BaseWechatPay{
     /**
      * 运行
      */
-    public function main(string $out_trade_no,float $amount,string $description,string $openid):PaymentResult|false{
+    public function main(string $scene,string $out_trade_no,float $amount,string $description,string $openid):PaymentResult|false{
         $requestData = array(
-            'appid'=>$this->config['appid']['mp']??'',
+            'appid'=>$this->config['appid'][$scene]??'',
             'description'=>$description,
             'out_trade_no'=>$out_trade_no,
             'amount'=>array(
