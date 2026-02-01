@@ -36,7 +36,11 @@ class BaseWechatPay extends BasePay{
     }
 
     protected function wechatV3Get(string $urlPath,array $data=[]):string|false{
-        $url=$this->config['host'].$urlPath."?". http_build_query($data);
+        if(count($data)>0){
+            $url=$this->config['host'].$urlPath."?". http_build_query($data);
+        } else{
+            $url=$this->config['host'].$urlPath;
+        }
         $header=[
             'Authorization: '.$this->getAuthorization($url,$data,'GET'),
             'Accept: application/json',

@@ -133,7 +133,7 @@ trait Common{
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); // 从证书中检查SSL加密算法是否存在
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-
+        // curl_setopt($curl, CURLOPT_HEADER, true);
         $output = curl_exec($curl);
         curl_close($curl);
         return $output;
