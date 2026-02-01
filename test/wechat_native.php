@@ -8,7 +8,7 @@ use iboxs\payment\Payment;
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     var_dump('错误',$errfile,$errline,$errstr);
 });
-$out_trade_no="2021101247845550";   //商户订单号
+$out_trade_no="2021101247845551";   //商户订单号
 $amount=1;   //订单金额，单位元（注意这里，也是传入元为单位，与支付宝一致，组件内会根据情况处理）
 $description="订单测试";  //订单标题
 

@@ -102,7 +102,6 @@ trait Common{
         if(is_array($data)){
             $data=json_encode($data,256|64);
         }
-        // debug($data);
         $curl = curl_init();
         if (count($headers) > 0) {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
@@ -118,7 +117,6 @@ trait Common{
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         $output = curl_exec($curl);
         curl_close($curl);
-        debug($output);
         return $output;
     }
 

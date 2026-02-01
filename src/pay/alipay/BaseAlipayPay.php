@@ -8,7 +8,7 @@ class BaseAlipayPay extends BasePay{
 
     public function __construct($config)
     {
-        $this->config=$config['alipay']??[];
+        $this->config=$config['alipay']??$config;
         if(empty($this->config)){
             throw new \Exception("请配置支付宝参数");
         }
@@ -74,7 +74,7 @@ class BaseAlipayPay extends BasePay{
                     unset($postData[$key]);
                 }
             }
-            $postData = http_build_query($postData);
+            $postData=http_build_query($postData);
         }
         $result=$this->postHttp($url,$postData);
         if($format=='json'){
@@ -100,16 +100,18 @@ class BaseAlipayPay extends BasePay{
     }
 
     private function postHttp($url,$params){
-        $options=array(
-            'http'=>[
-                'header' => 'Content-Type: application/x-www-form-urlencoded',
-                'method' => 'POST',
-                'content' => $params,
-                'timeout' => 50
-            ]
-        );
-        $context = stream_context_create($options);
-        return file_get_contents($url, false, $context);
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); // 从证书中检查SSL加密算法是否存在
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset='.$this->config['charset']));
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
     }
 
     protected function getRequestPublicData($method,$requestData){

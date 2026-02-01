@@ -7,6 +7,8 @@ namespace iboxs\payment;
 
 use Exception;
 use iboxs\payment\pay\alipay\Notify as AlipayNotify;
+use iboxs\payment\pay\NotifyData;
+use iboxs\payment\pay\wechat\Notify as WechatNotify;
 
 class Notify
 {
@@ -15,39 +17,72 @@ class Notify
      * 无需传入任何数据
      * @return false|array 若验签成功，返回数据，若验签失败，则返回false
      */
-    public static function Alipay($format=true,$config=[]){
+    public static function Alipay($echo=true,$config=[]):NotifyData|false{
         $config=self::getConfig($config,'alipay');
         $params=$_POST;
-        // $params=request()->param();
         $service=new AlipayNotify($config);
         $info=$service->check($params);
         if($info==false){
+            if($echo==true){
+                echo 'fail';  //请不要修改或删除
+            }
             return false;
         }
-        if($format==false){
-            return $params;
+        if(isset($params['charset'])&&strtolower($params['charset'])=='gbk'){
+            $params=json_decode(iconv('GBK//IGNORE','UTF-8',json_encode($params)),true);
         }
-        if(!($params['trade_status']=='TRADE_SUCCESS'||$params['trade_status']=='TRADE_FINISHED')){
-            return false;
+        // $result=[
+        //     'trade_no'=>$params['trade_no'],  //支付宝交易号
+        //     'out_trade_no'=>$params['out_trade_no'],  //商家订单号
+        //     'receipt_amount'=>$params['receipt_amount']??0,  //商家在交易中实际收到的款项，单位为人民币
+        //     'buyer_pay_amount'=>$params['buyer_pay_amount']??0,  //用户在交易中支付的金额
+        //     'params'=>$params  //原文
+        // ];
+        if($echo==true){
+            echo 'success';  //请不要修改或删除
         }
-        try{
-            $params['subject']=iconv('GBK//IGNORE','UTF-8',$params['subject']);
-        } catch(Exception $e){}
+        return new NotifyData('alipay',$params);
+    }
 
-        $result=[
-            'notify_type'=>$params['notify_type'],  //通知的类型
-            'trade_no'=>$params['trade_no'],  //支付宝交易凭证号
-            'out_trade_no'=>$params['out_trade_no'],  //商家订单号
-            'out_biz_no'=>$params['out_biz_no']??null,  //商家业务 ID，主要是退款通知中返回退款申请的流水号。
-            'trade_status'=>$params['trade_status'],  //交易目前所处的状态，见下表 交易状态说明。
-            'receipt_amount'=>$params['receipt_amount']??0,  //商家在交易中实际收到的款项，单位为人民币
-            'buyer_pay_amount'=>$params['buyer_pay_amount']??0,  //用户在交易中支付的金额
-            'refund_fee'=>$params['refund_fee']??0,  //退款通知中，返回总退款金额
-            'subject'=>$params['subject'],  //商品的标题/交易标题/订单标题/订单关键字等，是请求时对应的参数，在通知中原样传回。
-            'body'=>$params['body']??'', //该笔订单的备注、描述、明细等。对应请求时的 body 参数，在通知中原样传回。
-            'params'=>$params  //原文
-        ];
-        return $result;
+    public static function Wechat($echo=true,$config=[]):NotifyData|false{
+        $service=new WechatNotify(self::getConfig($config,'wechat'));
+        $notify=$service->check();
+        if($notify==false){
+            if($echo==true){
+                header('HTTP/1.1 400 Bad Request');
+            }
+            return false;
+        }
+        $resouse=$notify['resource']??null;
+        
+        if($resouse==null){
+            if($echo==true){
+                header('HTTP/1.1 400 Bad Request');
+            }
+            return false;
+        }
+        $decData=$service->decryptToString($resouse['associated_data'],$resouse['nonce'], $resouse['ciphertext']);
+        if($decData==false){
+            if($echo==true){
+                header('HTTP/1.1 400 Bad Request');
+            }
+            return false;
+        }
+        $decData=json_decode($decData,true);
+        // if($decData['trade_state']!='SUCCESS'){
+        //     return false;
+        // }
+        // $result=[
+        //     'trade_no'=>$decData['transaction_id'],  //交易号
+        //     'out_trade_no'=>$decData['out_trade_no'],  //商家订单号
+        //     'receipt_amount'=>$decData['amount']['total']??0,  //商家在交易中实际收到的款项，单位为人民币
+        //     'buyer_pay_amount'=>$decData['amount']['payer_total']??0,  //用户在交易中支付的金额
+        //     'params'=>$decData  //原文
+        // ];
+        if($echo==true){
+            header('HTTP/1.1 200 OK');
+        }
+        return new NotifyData('wechat',$decData);
     }
 
     private static function getConfig($config,$paymode){
@@ -57,6 +92,6 @@ class Notify
             }
             $config=config('payment.'.$paymode);
         }
-        return $config;
+        return $config[$paymode]??[];
     }
 }

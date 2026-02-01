@@ -8,7 +8,7 @@ use iboxs\payment\Payment;
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     var_dump('错误',$errfile,$errline,$errstr);
 });
-$no="2021101247845559";   //商户订单号
+$no="2021101247845555";   //商户订单号
 $amount=1;   //订单金额，单位元
 $subject="订单测试";  //订单标题
 
