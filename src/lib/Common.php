@@ -1,7 +1,8 @@
 <?php
 namespace iboxs\payment\lib;
 trait Common{
-    public function convertUnderline($str){
+
+    public static function convertUnderline($str){
         $str = str_replace("_", "", $str);
         $str = preg_replace_callback('/([A-Z]{1})/', function ($matches) {
             return '_' . strtolower($matches[0]);
@@ -67,9 +68,9 @@ trait Common{
      * @param $targetCharset
      * @return string
      */
-    function characet($data, $targetCharset) {
+    public function characet($data, $targetCharset) {
         if (!empty($data)) {
-            $fileType = $this->charset;
+            $fileType = $this->config['charset'];
             if (strcasecmp($fileType, $targetCharset) != 0) {
                 $data = mb_convert_encoding($data, $targetCharset, $fileType);
                 //$data = iconv($fileType, $targetCharset.'//IGNORE', $data);
@@ -90,9 +91,49 @@ trait Common{
         $len = strlen($str) - 1;
         $randStr = '';
         for ($i = 0; $i < $length; $i++) {
-            $num = mt_rand(0, $len);
+            $num = rand(0, $len);
             $randStr .= $str[$num];
         }
         return $randStr;
+    }
+
+    public  function jsonPost($url,$headers = array(),$data = null)
+    {
+        if(is_array($data)){
+            $data=json_encode($data,256|64);
+        }
+        $curl = curl_init();
+        if (count($headers) > 0) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        }
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); // 从证书中检查SSL加密算法是否存在
+        if (!empty($data)) {
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
+    }
+
+    public  function httpGet($url,$headers = array())
+    {
+        $curl = curl_init();
+        if (count($headers) > 0) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        }
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); // 从证书中检查SSL加密算法是否存在
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        // curl_setopt($curl, CURLOPT_HEADER, true);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
     }
 }

@@ -1,5 +1,14 @@
-本项目正在开发2.0版本，将比1.0系列版本更实用也更便于调用（当前位于dev_new分支）,版本不兼容，若有兴趣一起测试2.0版本的，可是要dev_new分支代码进行开发，有建议的请提issue。
 ### 项目来历
+- 支付宝/微信支付调用一直是PHP开发者经常遇到的情况，各种接口，各种参数调用，SDK代码又太多，很多用不上，所以本项目应运而生，提供多种接口，难度很小，从启动支付到回调验签，都有函数一次性解决。代码量小，冗余低；
+* 本分支项目目前暂时仅直接支持Laravel、Thinkphp、IBoxs框架，其他框架使用需要手动进行配置，具体看下方具体说明。
+* 本分支功能将全面支持微信支付V3接口和支付宝刷脸支付等。
+* 很多接口尚未完善，若有需要的接口这里还没有的，可提issue。
+* 本版本暂时仅支持支付宝和微信支付，若需要QQ钱包支付和PayPal支付的，请使用旧版本，可根据情况需要在后续再次新增QQ钱包支付和PayPal支付。
+* 若需要接入其他支付接口的（例如云闪付等）可提issue，作者根据实际情况需要可考虑在后续版本中添加。
+* 具体的调用方法查看test文件夹下各个示例文件。
+* 完整代码请以github上发布的为准，国内码云上的只是同步项目，不一定是最新的。
+* 本项目要求PHP版本最低8.0，内部代码大部分开始使用强类型，必须在PHP8.0以上才可以运行，请注意版本问题。
+* 若有疑问或者bug，可提issue，或者联系QQ320587491  微信：itlattices
 
 
 - 支付宝/微信支付/QQ钱包调用一直是PHP开发者经常遇到的情况，各种接口，各种参数调用，SDK代码又太多，很多用不上，所以本项目应运而生，提供多种接口，难度很小，从启动支付到回调验签，都有函数一次性解决。代码量小，冗余低；
@@ -104,298 +113,71 @@ $orderInfo=array(
 
 
 - 支付宝条码支付(AlipayBarCode)传入的$orderInfo参数需包含:
+### 配置
+* Laravel/ThinkPHP框架
+    * 需要在config文件夹下创建一个文件payment.php文件，内容为：
 ```php
-$orderInfo=array(
-    'order_name'=>"订单测试",   //订单名称或标题
-    'amount'=>1,               //订单金额（最低0.01）
-    'out_trade_no'=>"2021101247845",    //商户订单号（同一个商户本订单号需唯一）
-		'authCode'=>'4444444444444444',   //条码信息
-  	'store_id'=>'Stroe01'   //分店ID（本参数可有可无）
-);
-```
-
-
-- 支付宝转账到个人账户(AlipayTransfer)传入的$orderInfo参数需包含:
-```php
-$orderInfo=array(
-    'account'=>"zqu1016@qq.com",   //转入的账户（支持手机号或邮箱）
-    'real_name'=>'张三',               //账户的真实姓名
-    'amount'=>1,    //转账金额
-	'remark'=>'佣金'   //转账备注
-);
-```
-
-
-
-* 支付宝转账结果查询（AlipayTransferQuery）传入的$orderInfo参数需包含
-```
-$orderInfo=array(
-	'outBizBo' =>'1212121212', //商户转账唯一订单号（商户转账唯一订单号、支付宝转账单据号 至少填一个）
-	'orderId'  =>'123456789'   //支付宝转账单据号（商户转账唯一订单号、支付宝转账单据号 至少填一个）  
-);
-```
-
-
-
-#### 微信
-
-
-- 已提供接口有：
-
-| 接口 | 函数 | 备注 |
-| --- | --- | --- |
-| WxPayCode | Native支付 | 获取支付二维码后用户扫码支付（一般用于PC端） |
-| WxPayWap | 手机网页支付 | 在手机浏览器内调用本接口启动微信支付 |
-| WxJsPay | 微信公众号支付 | 微信内公众号网页调用微信启动支付 |
-| WxJsapiParams | 微信小程序/APP支付 | 获取预支付码，后可在小程序端调用支付接口启动支付 |
-| WxRefund | 微信支付退款 | 微信支付退款，可部分或全部退款，原路退回 |
-| WxTransfers | 微信支付到零钱 | 使用微信支付向用户转账，直接转账到用户零钱内 |
-
-```
-*其他接口陆续更新中
-```
-
-
-
-##### 参数
-
-
-- Native支付（WxPayCode）、手机网页支付（WxPayWap）、微信小程序/APP支付(WxJsapiParams)需传入的$orderInfo参数需包含：
-
-```
-$orderInfo=array(
-    'order_name'=>"订单测试",   //订单名称或标题
-    'amount'=>1,               //订单金额（最低0.01)
-    'out_trade_no'=>"2021101247845",    //商户订单号（同一个商户本订单号需唯一）,
-    'body'=>''   //微信小程序/APP支付需要（本参数可选）
-);
-```
-
-
-
-
-- 微信公众号支付（WxJsPay）需传入的$orderInfo参数需包含：
-
-```
-$orderInfo=array(
-    'order_name'=>"订单测试",   //订单名称或标题
-    'amount'=>1,               //订单金额（最低0.01)
-    'out_trade_no'=>"2021101247845",    //商户订单号（同一个商户本订单号需唯一）,
-    'code'=>''   //微信会话code（通过微信内网页js获取，需使用其获得用户openid）
-);
-```
-
-
-
-
-- 微信退款接口（WxRefund）需传入的$orderInfo参数需包含：
-
-```
-$orderInfo=array(
-    'trade_no'=>21010101010101,   //微信支付流水号（微信支付回调获得的微信支付内的交易号）
-    'amount'=>1,               //订单金额（最低0.01)
-    'out_trade_no'=>"2021101247845",    //商户订单号（需退款的订单号）,
-    'refund_amount'=>0.5,    //退款金额
-    'refund_trade_no'=>54145414512541,  //退款订单号（与订单号不同，退款的编号，可临时生成）
-    'desc'=>'用户退款'   //退款说明
-);
-```
-
-
-
-
-- 微信转账到零钱接口（WxTransfers）中的$orderInfo参数需包含：
-
-```
-$orderInfo=array(
-    'amount'=>1,               //转账金额（最低0.01)
-    'out_trade_no'=>"2021101247845",    //商户订单号,
-    'real_name'=>"张三",    //收款人真实姓名
-    'desc'=>'订单奖励'   //转账说明
-);
-```
-
-
-
-### 示例代码
-
-
-- 可参考包内test文件夹；
-- 可以将配置程序写到一个文件内，具体可参考test文件夹内的示例程序
-- 示例代码均基于composer安装后的开发，其他方式安装的可参考进行修改。
-
-
-
-#### 支付宝示例代码：
-
-
-- 支付：
-
-```php
-<?php
-require "../vendor/autoload.php";
-use iboxs\payment\Client;
-use iboxs\payment\Notify;
-//支付宝配置信息
-$alipayconfig=[
-    'publicKey' =>"", //支付宝公钥
-    'rsaPrivateKey' =>"", //商户私钥
-    'appid' => "2016192400584878",   //应用APPID
-    'notify_url' => "http://auth.itgz8.com/return",  //异步通知地址
-    'return_url' => "http://auth.itgz8.com/return",   //同步通知地址
-    'charset' => "UTF-8",
-    'sign_type'=>"RSA2",
-    'gatewayUrl' =>"https://openapi.alipay.com/gateway.do"   //应用网关，若为沙箱环境则为："https://openapi.alipaydev.com/gateway.do"
+<?
+return [
+    'alipay'=>[
+        'publicKey' =>"", //支付宝公钥
+        'rsaPrivateKey' =>"", //应用私钥
+        'appid' => "",  // 开放平台APPID
+        'notify_url' => "",  //异步通知地址
+        'return_url' => "",  //同步回调地址
+        'charset' => "UTF-8",  //编码方式
+        'sign_type'=>"RSA2",  //加密方式（本组件使用RSA2进行加密和回调验签）
+        'gatewayUrl' =>"https://openapi.alipay.com/gateway.do",  //支付宝接口地址（若为沙箱环境的记得改为https://openapi.alipaydev.com/gateway.do）
+        'has_mobile'=>false //是否已开通手机H5网页支付，若已开通，若用户为手机访问且调用网页支付接口时，会默认跳转手机端支付接口
+    ],
+    'weixin'=>[
+        'host'=>'https://api.mch.weixin.qq.com',
+        'mchid'=>'',  //商户号
+        'appid'=>'',  //APPID（公众号支付、JS支付必须）
+        'apiKey'=>'',  //APIV3秘钥
+        'key'=>'', //商户APIV2秘钥（付款码支付用）
+        'notify_url'=>'',  //异步回调地址
+        'return_url'=>'',  //同步回调地址（H5支付必须）
+        'merchantPrivateKeyFilePath'=>'', //商户API私钥证书文件地址
+        'merchantCertificateSerial'=>'', //「商户API证书」的「证书序列号」
+    ]
 ];
-//订单信息
-$orderInfo=array(
-    'order_name'=>"订单测试",
-    'amount'=>1,
-    'out_trade_no'=>"2021101247845"
-);
-$alipay=new Client($alipayconfig);  //实例化，若需使用支付宝则传入支付宝配置数组
-var_dump($alipay->AlipayWeb($orderInfo));   //调用网页支付接口启动支付，若为其他接口，则根据上方需示例的各个接口函数调用不同的函数，并传入指定格式的$orderInfo参数即可.
 ?>
 ```
 
+请注意填写好内容，后续请求这里将作为全局配置使用。
+`若需要动态配置，可调用iboxs\payment\Payment::setConfig($config)配置进行载入，$config与上方配置文件内容一致。`
 
-- 回调
-
+* 具体的调用方法和示例程序，请查阅test文件夹下的具体demo。
+* 注意：若在laravel/thinkphp框架下使用，则无需调用setConfig方法，可直接调用具体的接口，若在其他框架下使用的，也不想调用setConfig方法时，可将下列函数放入公共函数文件内即可：
 ```php
-<?php
-require "../vendor/autoload.php";
-use iboxs\payment\Client;
-use iboxs\payment\Notify;
-//支付宝配置信息
-$alipayconfig=[
-    'publicKey' =>"", //支付宝公钥
-    'rsaPrivateKey' =>"", //商户私钥
-    'appid' => "2016192400584878",   //应用APPID
-    'notify_url' => "http://auth.itgz8.com/notify",  //异步通知地址
-    'return_url' => "http://auth.itgz8.com/return",   //同步通知地址
-    'charset' => "UTF-8",
-    'sign_type'=>"RSA2",
-    'gatewayUrl' =>"https://openapi.alipay.com/gateway.do"   //应用网关，若为沙箱环境则为："https://openapi.alipaydev.com/gateway.do"
-];
-$result=Notify::alipayNotify($alipayconfig);  //调用支付宝异步验签 ////返回布尔型或数组，验签失败返回false，验签成功返回回调的数据
-if($result==false){
-    echo 'fail';
-  	return;
+// 这里只做示例，请根据实际情况调整
+function config(string $key){
+    return require("./config/config.php");  //修改为你的配置文件路径
 }
-//进行订单处理（$result内为回调的数据数组）【这里不需要再输出success，接口内已经输出了，这里只需要进行各种业务流程即可】
-//订单处理逻辑，订单号$result['out_trade_no']，订单金额$result['total_amount']等，这里的$result含有所有支付宝的反馈信息
 ```
 
-
-
-#### 微信支付示例代码：
-
-
-- 支付：
-
-```php
-<?php
-namespace iboxs\test;
-require "../vendor/autoload.php";
-use iboxs\payment\Client;
-
-$wxpayconfig=[
-    'mchid'=>'1504922561',   //商户号
-    'appid'=>'',    //APPID（公众号支付必须）
-    'apiKey'=>'',    //Key
-    'notify_url'=>'http://auth.itgz8.com/notify',   //异步通知地址
-    'return_url'=>'http://auth.itgz8.com/return'  //网站地址（手机网页支付接口必须，其他接口不需要）
-];
-$orderInfo=array(
-    'order_name'=>"订单测试",
-    'amount'=>1,
-    'out_trade_no'=>"2021101247845"
-);
-$wxpay=new Client($wxpayconfig);
-var_dump($wxpay->WxPayCode($orderInfo));
+* 若发现报错，可调用在`$r=$payment->run();`之后的获得的支付结果对象的`getRequestData`方法获取原始请求参数(若直接返回false，则为请求失败或者参数配置问题，请检查你的网络和配置是否完整)，以排查原因，例如：
 ```
-
-
-
-
-- 回调
-
-```
-<?php
-require "../vendor/autoload.php";
-use iboxs\payment\Notify;
-$wxpayconfig=[
-    'mchid'=>'1504922561',   //商户号
-    'appid'=>'',    //APPID（公众号支付必须）
-    'apiKey'=>'',    //Key
-    'notify_url'=>'http://auth.itgz8.com/notify',   //异步通知地址
-    'return_url'=>'http://auth.itgz8.com/return'  //网站地址（手机网页支付接口必须，其他接口不需要）
-];
-$result=Notify::WxPayNotify($wxpayconfig);  //调用微信回调验签 //返回布尔型或数组，验签失败返回false，验签成功返回回调的数据
-if($result==false){
-    echo 'fail';  //回调验签失败
-    return;
+$payment=Payment::wechatCloseTrade($out_trade_no);
+$r=$payment->run();
+if($r==false){
+    var_dump('请求错误');
+    exit;
 }
-//进行订单处理（$result内为回调的数据数组）
-//var_dump($result)
-//处理订单逻辑，付款金额$result['cash_fee']，获取订单号$result['out_trade_no']等等，这里的$result含有所有微信返回的通知信息数组
-```
-
-
-
-#### QQ支付示例代码：
-
-
-- 支付：
-
-```php
-<?php
-namespace iboxs\test;
-require "../vendor/autoload.php";
-use iboxs\payment\Client;
-
-$qqpayconfig=[
-    'mchid'=>'1504922561',   //商户号
-    'apiKey'=>'',    //Key
-    'notify_url'=>'http://auth.itgz8.com/notify'   //异步通知地址
-];
-$orderInfo=array(
-    'order_name'=>"订单测试",  //订单名称
-    'amount'=>1,  //订单金额
-    'out_trade_no'=>"2021101247845"   //订单号
-);
-$qqpay=new Client($qqpayconfig);
-var_dump($qqpay->QQPay($orderInfo));
-```
-
-
-
-
-- 回调
-
-```
-<?php
-require "../vendor/autoload.php";
-use iboxs\payment\Notify;
-$qqpayconfig=[
-    'mchid'=>'1504922561',   //商户号
-    'apiKey'=>'',    //Key
-    'notify_url'=>'http://auth.itgz8.com/notify'   //异步通知地址
-];
-$result=Notify::QqPayNotify($qqpayconfig);  //调用QQ回调验签 //返回布尔型或数组，验签失败返回false，验签成功返回回调的数据
-if($result==false){
-    echo 'fail';  //回调验签失败
-    return;
+if($r['code']!=0){
+    $requestData=$r->getRequestData();  //这里可获得请求接口的完整的原始参数
 }
-//进行订单处理（$result内为回调的数据数组）
-//var_dump($result)
-//处理订单逻辑，付款金额$result['cash_fee']，获取订单号$result['out_trade_no']等等，这里的$result含有所有QQ钱包返回的通知信息数组
 ```
 
+#### 回调验签
+* 支付宝支付
+```
+$notifyResult=Notify::Alipay();  //返回false为验签失败，成功将返回一个回调数据对象，便于后续处理
+```
+* 微信支付
+```
+$notifyResult=Notify::Wechat();  //返回false为验签失败，成功将返回一个回调数据对象(已解密)，便于后续处理
+```
 
-### 更新日志
-
-- V1.2.0
-  - 新增支付宝js支付、条码支付、转账接口
-  - 修改回调验签成功后的返回值为回调的参数数组（支付宝的已转为数组字典，微信的也已转为数组字典），返回若为false的则为验签失败。
-
+* 具体的回调对象处理方法可查看test文件夹下相应的示例代码。

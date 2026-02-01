@@ -3,3 +3,5 @@
 composer.lock
 /vendor
 test/config.php
+test/nginx.htaccess
+test/.htaccess
