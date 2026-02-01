@@ -27,6 +27,9 @@ return [
         'merchantPrivateKeyFilePath'=>'', //商户API私钥证书文件地址（绝对地址）
         'merchantCertificateSerial'=>'', //「商户API证书」的「证书序列号」
         'currency'=>'CNY',  //符合ISO 4217标准的三位字母代码，默认人民币：CNY
+        //以下两个参数在需要商户出资相关接口才有用，如转账之类的接口，需必填
+        'publicKeyPath'=>'', //微信支付平台公钥证书文件地址（绝对地址）
+        'publicKeySerial'=>'' //微信支付平台公钥证书的公钥ID/序列号
     ]
 ];
 ?>

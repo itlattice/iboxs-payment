@@ -91,4 +91,29 @@ class BaseWechatPay extends BasePay{
         }
         return $encryptedData;
     }
+
+    protected function publicKeySerialize(string $data):string{
+        $public_key_path = $this->config['publicKeyPath']??'';
+        if(!file_exists($public_key_path)){
+            throw new \Exception('微信支付公钥文件不存在');
+        }
+        $public_key = file_get_contents($public_key_path);
+        $encrypted = '';
+        openssl_public_encrypt($data, $encrypted, $public_key, OPENSSL_PKCS1_OAEP_PADDING);
+        $sign = base64_encode($encrypted);
+        return $sign;
+    }
+
+    protected function wechatV3PostSerial(string $urlPath,array $data):string|false{
+        $url=$this->config['host'].$urlPath;
+        $header=[
+            'Authorization: '.$this->getAuthorization($url,$data,'POST',$dataStr),
+            'Accept: application/json',
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+            'Content-Type: application/json',
+            'Wechatpay-Serial: '.$this->config['publicKeySerial']
+        ];
+        $result=$this->jsonPost($url,$header,$dataStr);
+        return $result;
+    }
 }
