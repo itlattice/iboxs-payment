@@ -5,6 +5,7 @@
 * 很多接口尚未完善，若有需要的接口这里还没有的，可提issue。
 * 本版本暂时仅支持支付宝和微信支付，若需要QQ钱包支付和PayPal支付的，请使用旧版本，可根据情况需要在后续再次新增QQ钱包支付和PayPal支付。
 * 若需要接入其他支付接口的（例如云闪付等）可提issue，作者根据实际情况需要可考虑在后续版本中添加。
+* 具体的调用方法查看test文件夹下各个示例文件。
 
 ### 配置
 * Laravel/ThinkPHP框架
@@ -47,5 +48,18 @@ return [
 // 这里只做示例，请根据实际情况调整
 function config(string $key){
     return require("./config/config.php");  //修改为你的配置文件路径
+}
+```
+
+* 若发现报错，可调用在`$r=$payment->run();`之后的获得的支付结果对象的`getRequestData`方法获取原始请求参数(若直接返回false，则为请求失败或者参数配置问题，请检查你的网络和配置是否完整)，以排查原因，例如：
+```
+$payment=Payment::wechatCloseTrade($out_trade_no);
+$r=$payment->run();
+if($r==false){
+    var_dump('请求错误');
+    exit;
+}
+if($r['code']!=0){
+    $requestData=$r->getRequestData();  //这里可获得请求接口的完整的原始参数
 }
 ```

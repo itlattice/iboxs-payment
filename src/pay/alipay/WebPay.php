@@ -20,8 +20,8 @@ class WebPay extends BaseAlipayPay{
         } else{
             $publicData=$this->getRequestPublicData('alipay.trade.page.pay',$requestData);
         }
-        $html=$this->buildRequestForm($publicData);
-        return new PaymentResult($html,$publicData);
+        =$this->buildRequestForm($publicData);
+        return new PaymentResult(,$publicData);
     }
 
     private function buildRequestForm(array $para_temp) {

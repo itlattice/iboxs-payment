@@ -34,6 +34,7 @@ use iboxs\payment\pay\{Alipay,Wechat};
  * @method static Wechat wechatOutTradeQuery(string $out_trade_no) 微信支付商户订单号查询订单
  * @method static Wechat wechatCloseTrade(string $out_trade_no) 微信支付关闭订单
  * @method static Wechat wechatRefund(string $out_refund_no,float $amount,float $total,string $transaction_id=null,string $out_trade_no=null) 微信支付退款申请
+ * @method static Wechat wechatAppPay(string $out_trade_no,float $amount,string $description) 微信支付APP支付
  */
 class Payment
 {
